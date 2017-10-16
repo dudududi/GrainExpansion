@@ -1,6 +1,5 @@
 package com.dudududi.grainexpansion.model.neighbourhoods;
 
-import com.dudududi.grainexpansion.model.CellNeighbourhood;
 import com.dudududi.grainexpansion.model.CoordinatePair;
 
 import java.util.ArrayList;
@@ -14,12 +13,8 @@ public class MooreNeighbourhood extends CellNeighbourhood {
         super();
     }
 
-    public MooreNeighbourhood(boolean isPeriodic) {
-        super(isPeriodic);
-    }
-
     @Override
-    protected List<CoordinatePair> getCellNeighbourhood() {
+    public List<CoordinatePair> getCellNeighbourhood() {
         List<CoordinatePair> indices = new ArrayList<>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {

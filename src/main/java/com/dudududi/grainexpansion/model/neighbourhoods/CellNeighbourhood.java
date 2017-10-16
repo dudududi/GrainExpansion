@@ -1,4 +1,6 @@
-package com.dudududi.grainexpansion.model;
+package com.dudududi.grainexpansion.model.neighbourhoods;
+
+import com.dudududi.grainexpansion.model.CoordinatePair;
 
 import java.util.List;
 
@@ -8,15 +10,11 @@ import java.util.List;
 public abstract class CellNeighbourhood {
     private boolean isPeriodic;
 
-    protected CellNeighbourhood() {
+    CellNeighbourhood() {
         isPeriodic = true;
     }
 
-    protected CellNeighbourhood(boolean isPeriodic) {
-        this.isPeriodic = isPeriodic;
-    }
-
-    boolean isPeriodic() {
+    public boolean isPeriodic() {
         return isPeriodic;
     }
 
@@ -24,5 +22,5 @@ public abstract class CellNeighbourhood {
         this.isPeriodic = isPeriodic;
     }
 
-    protected abstract List<CoordinatePair> getCellNeighbourhood();
+    public abstract List<CoordinatePair> getCellNeighbourhood();
 }

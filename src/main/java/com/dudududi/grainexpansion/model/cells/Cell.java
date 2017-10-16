@@ -1,9 +1,10 @@
-package com.dudududi.grainexpansion.model;
+package com.dudududi.grainexpansion.model.cells;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -13,25 +14,26 @@ import java.util.Random;
 public class Cell {
     private BooleanProperty isAlive;
     private List<Cell> neighbourhood;
-    private Color color;
     private Random random;
+    private CellState state;
 
     public Cell() {
         random = new Random();
         isAlive = new SimpleBooleanProperty(false);
-        color = Color.WHITE;
+        state = new CellState(Color.WHITE, CellState.Type.DEAD);
     }
 
     public BooleanProperty getAliveProperty(){
         return isAlive;
     }
 
-    public void setColor(Color color){
-        this.color = color;
+    public void setState(CellState state) {
+        this.state = state;
+        setAlive(state.getType().equals(CellState.Type.ALIVE));
     }
 
     public Color getColor(){
-        return color;
+        return state.getColor();
     }
 
     public boolean isAlive() {
@@ -43,7 +45,8 @@ public class Cell {
     }
 
     public void setAliveWithRandomColor(){
-        color = new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
+        Color color = new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
+        state = new CellState(color, CellState.Type.ALIVE);
         isAlive.setValue(true);
     }
 
@@ -53,5 +56,12 @@ public class Cell {
 
     public void setNeighbourhood(List<Cell> neighbourhood) {
         this.neighbourhood = neighbourhood;
+    }
+
+    public List<String> toCSVRecord() {
+        List<String> csvRecord = new ArrayList<>();
+        csvRecord.add(state.getColor().toString());
+        csvRecord.add(String.valueOf(state.getType().getStateId()));
+        return csvRecord;
     }
 }

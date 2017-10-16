@@ -1,7 +1,7 @@
 package com.dudududi.grainexpansion.controller.randomizable;
 
 import com.dudududi.grainexpansion.controller.Randomizable;
-import com.dudududi.grainexpansion.model.Cell;
+import com.dudududi.grainexpansion.model.cells.Cell;
 import com.dudududi.grainexpansion.model.CellAutomaton;
 
 /**

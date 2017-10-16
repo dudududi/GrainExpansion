@@ -1,5 +1,6 @@
 package com.dudududi.grainexpansion;
 
+import com.dudududi.grainexpansion.controller.RootController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,13 +24,14 @@ public class Main extends Application {
         this.primaryStage.setTitle("Static recrystallization");
 
         initRoot();
-
     }
 
     private void initRoot() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("view/root.fxml"));
+        loader.setLocation(Main.class.getClassLoader().getResource("layout/root.fxml"));
         this.root = loader.load();
+        RootController controller = loader.getController();
+        controller.setStage(primaryStage);
         this.primaryStage.setScene(new Scene(root, 800, 600));
         this.primaryStage.show();
     }

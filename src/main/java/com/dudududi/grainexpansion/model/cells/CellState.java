@@ -42,6 +42,8 @@ public class CellState {
             switch (id) {
                 case 1:
                     return ALIVE;
+                case 2:
+                    return INCLUSION;
                 default:
                     return DEAD;
             }

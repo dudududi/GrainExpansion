@@ -8,4 +8,6 @@ import com.dudududi.grainexpansion.model.cells.CellState;
  */
 public interface Rule {
     CellState shouldCellBeAlive(Cell cell);
+
+    boolean isCellOnBoundary(Cell cell);
 }

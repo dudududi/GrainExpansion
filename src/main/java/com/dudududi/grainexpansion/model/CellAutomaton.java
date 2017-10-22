@@ -13,9 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,14 +24,17 @@ public class CellAutomaton {
     private static final String[] CSV_HEADERS = new String[]{"x", "y", "color", "state"};
     private Cell[][] cells;
     private int width, height;
+    private List<CoordinatePair> boundaryCells;
 
     public CellAutomaton(int width, int height) {
         this.width = width;
         this.height = height;
         cells = new Cell[width][height];
+        boundaryCells = new ArrayList<>();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                cells[i][j] = new Cell();
+                cells[i][j] = new Cell(new CoordinatePair(i, j));
+                boundaryCells.add(cells[i][j].getPosition());
             }
         }
     }
@@ -60,9 +61,13 @@ public class CellAutomaton {
 
     public void next(Rule rule) {
         CellState[][] nextStep = new CellState[width][height];
+        boundaryCells = new ArrayList<>();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 nextStep[i][j] = rule.shouldCellBeAlive(cells[i][j]);
+                if (rule.isCellOnBoundary(cells[i][j])) {
+                    boundaryCells.add(cells[i][j].getPosition());
+                }
             }
         }
         for (int i = 0; i < width; i++) {
@@ -131,13 +136,17 @@ public class CellAutomaton {
         return null;
     }
 
-    public void addInclusions(int amount, int diagonal) {
+    public void addInclusions(int amount, int size, boolean isCircural) {
         Random random = new Random();
         for (int i = 0; i < amount; i ++) {
-            int x = random.nextInt(width);
-            int y = random.nextInt(height);
-            for (int k = 0; k < diagonal; k++) {
-                for (int l = 0; l < diagonal; l++) {
+            int positionIndex = random.nextInt(boundaryCells.size());
+            CoordinatePair position = boundaryCells.get(positionIndex);
+            int x = position.x;
+            int y = position.y;
+            for (int k = -size/2; k <= size/2; k++) {
+                for (int l = -size/2; l <= size/2; l++) {
+                    if (x+k < 0 || y + l < 0 || x+k >= width || y+l >= height ||
+                            (isCircural && (Math.pow(k, 2) + Math.pow(l,2)) > Math.pow(size/2, 2) )) continue;
                     cells[x+k][y+l].setState(new CellState(Color.BLACK, CellState.Type.INCLUSION));
                 }
             }

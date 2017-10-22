@@ -1,5 +1,6 @@
 package com.dudududi.grainexpansion.model.cells;
 
+import com.dudududi.grainexpansion.model.CoordinatePair;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
@@ -16,18 +17,27 @@ public class Cell {
     private List<Cell> neighbourhood;
     private Random random;
     private CellState state;
+    private CoordinatePair position;
 
-    public Cell() {
+    public Cell(CoordinatePair position) {
         random = new Random();
         isAlive = new SimpleBooleanProperty(false);
         state = new CellState(Color.WHITE, CellState.Type.DEAD);
+        this.position = position;
     }
 
     public BooleanProperty getAliveProperty(){
         return isAlive;
     }
 
+    public CoordinatePair getPosition() {
+        return position;
+    }
+
     public void setState(CellState state) {
+        if(this.state.getType().equals(CellState.Type.ALIVE) && state.getType().equals(CellState.Type.INCLUSION)){
+            setAlive(false);
+        }
         this.state = state;
         setAlive(!state.getType().equals(CellState.Type.DEAD));
     }

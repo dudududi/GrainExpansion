@@ -10,6 +10,8 @@ import com.dudududi.grainexpansion.model.neighbourhoods.CellNeighbourhood;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -61,7 +63,7 @@ public class RootController {
     private TextField inclusionsField;
 
     @FXML
-    private TextField diagonalField;
+    private TextField inclusionsSize;
 
     @FXML
     private Button clearButton;
@@ -83,6 +85,9 @@ public class RootController {
 
     @FXML
     private MenuItem exportButton;
+
+    @FXML
+    private ComboBox<String> selectInclusionsType;
 
 
     private CellNeighbourhood neighbourhood;
@@ -240,10 +245,14 @@ public class RootController {
     }
 
     private void configureInclusions(){
+        ObservableList<String> inclusionsTypes = FXCollections.observableArrayList("Square", "Circular");
+        selectInclusionsType.getItems().addAll(inclusionsTypes);
+        selectInclusionsType.getSelectionModel().selectFirst();
         inclusionsButton.setOnMouseClicked(event -> {
             int inclusionsAmount = Integer.valueOf(inclusionsField.getText());
-            int diagonal = Integer.valueOf(diagonalField.getText());
-            cellAutomaton.addInclusions(inclusionsAmount, diagonal);
+            int size = Integer.valueOf(inclusionsSize.getText());
+            boolean isCircular = selectInclusionsType.getSelectionModel().getSelectedItem().equals("Circular");
+            cellAutomaton.addInclusions(inclusionsAmount, size, isCircular);
         });
     }
 }

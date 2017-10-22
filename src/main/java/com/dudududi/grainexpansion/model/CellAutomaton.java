@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -128,6 +129,19 @@ public class CellAutomaton {
             Logger.getGlobal().log(Level.ALL, "Unable to read CSV file", e);
         }
         return null;
+    }
+
+    public void addInclusions(int amount, int diagonal) {
+        Random random = new Random();
+        for (int i = 0; i < amount; i ++) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            for (int k = 0; k < diagonal; k++) {
+                for (int l = 0; l < diagonal; l++) {
+                    cells[x+k][y+l].setState(new CellState(Color.BLACK, CellState.Type.INCLUSION));
+                }
+            }
+        }
     }
 
 }

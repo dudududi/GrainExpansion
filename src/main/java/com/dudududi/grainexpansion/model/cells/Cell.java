@@ -29,7 +29,7 @@ public class Cell {
 
     public void setState(CellState state) {
         this.state = state;
-        setAlive(state.getType().equals(CellState.Type.ALIVE));
+        setAlive(!state.getType().equals(CellState.Type.DEAD));
     }
 
     public Color getColor(){
@@ -38,6 +38,10 @@ public class Cell {
 
     public boolean isAlive() {
         return isAlive.get();
+    }
+
+    public CellState getState() {
+        return state;
     }
 
     public void setAlive(boolean alive) {

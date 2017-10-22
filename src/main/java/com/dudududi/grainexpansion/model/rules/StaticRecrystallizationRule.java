@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 public class StaticRecrystallizationRule implements Rule {
     @Override
     public CellState shouldCellBeAlive(Cell cell) {
-        if (cell.isAlive()) return null;
+        if (cell.isAlive() || cell.getState().getType().equals(CellState.Type.INCLUSION)) return null;
         Map<Color, Long> counts =  cell.getNeighbourhood().stream()
-                .filter(c -> c.isAlive())
+                .filter(c -> c.isAlive() && !c.getState().getType().equals(CellState.Type.INCLUSION))
                 .collect(Collectors.groupingBy(Cell::getColor, Collectors.counting()));
         if (counts.size() == 0) return null;
         Color color = counts.entrySet().stream()

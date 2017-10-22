@@ -19,13 +19,14 @@ public class CellState {
         return color;
     }
 
-    Type getType() {
+    public Type getType() {
         return type;
     }
 
     public enum Type {
         DEAD(0),
-        ALIVE(1);
+        ALIVE(1),
+        INCLUSION(2);
 
         private final int stateId;
 

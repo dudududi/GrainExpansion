@@ -10,11 +10,13 @@ import com.dudududi.grainexpansion.model.neighbourhoods.CellNeighbourhood;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -22,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -55,6 +58,12 @@ public class RootController {
     private TextField nucleonsField;
 
     @FXML
+    private TextField inclusionsField;
+
+    @FXML
+    private TextField diagonalField;
+
+    @FXML
     private Button clearButton;
 
     @FXML
@@ -64,6 +73,9 @@ public class RootController {
     private Button randomizeButton;
 
     @FXML
+    private Button inclusionsButton;
+
+    @FXML
     private CheckBox periodicBC;
 
     @FXML
@@ -71,6 +83,7 @@ public class RootController {
 
     @FXML
     private MenuItem exportButton;
+
 
     private CellNeighbourhood neighbourhood;
     private CellAutomaton cellAutomaton;
@@ -115,6 +128,7 @@ public class RootController {
         configureAnimation();
         configureFileChooser();
         configureImportExportOptions();
+        configureInclusions();
     }
 
     private void generateAutomaton() {
@@ -183,8 +197,13 @@ public class RootController {
         exportButton.setOnAction(event -> {
             fileChooser.setTitle("Select export destination");
             File file = fileChooser.showSaveDialog(stage);
+            FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
             try (FileWriter fileWriter = new FileWriter(file)) {
-                cellAutomaton.printToCSVFile(fileWriter);
+                if ("CSV file".equals(selectedExtension.getDescription())) {
+                    cellAutomaton.printToCSVFile(fileWriter);
+                } else {
+                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+                }
             } catch (IOException e){
                 Logger.getGlobal().log(Level.ALL, "Unable to export file", e);
             }
@@ -193,13 +212,19 @@ public class RootController {
         importButton.setOnAction(event -> {
             fileChooser.setTitle("Select file to import");
             File file = fileChooser.showOpenDialog(stage);
+            FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
             try(FileReader fileReader = new FileReader(file)) {
-                cellAutomaton.clear();
-                cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
-                generateAutomaton();
-                widthField.setText(Integer.toString(cellAutomaton.getWidth()));
-                heightField.setText(Integer.toString(cellAutomaton.getHeight()));
-                configureAnimation();
+                if ("CSV file".equals(selectedExtension.getDescription())) {
+                    cellAutomaton.clear();
+                    cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
+                    generateAutomaton();
+                    widthField.setText(Integer.toString(cellAutomaton.getWidth()));
+                    heightField.setText(Integer.toString(cellAutomaton.getHeight()));
+                    configureAnimation();
+                } else {
+                    Image importedImg = new Image(file.toURI().toString());
+                    board.setImage(importedImg);
+                }
             } catch (IOException e) {
                 Logger.getGlobal().log(Level.ALL, "Unable to import file", e);
             }
@@ -208,7 +233,17 @@ public class RootController {
 
     private void configureFileChooser() {
         fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV file", "*.csv"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV file", "*.csv"),
+                new FileChooser.ExtensionFilter("PNG file", "*.png"));
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+    }
+
+    private void configureInclusions(){
+        inclusionsButton.setOnMouseClicked(event -> {
+            int inclusionsAmount = Integer.valueOf(inclusionsField.getText());
+            int diagonal = Integer.valueOf(diagonalField.getText());
+            cellAutomaton.addInclusions(inclusionsAmount, diagonal);
+        });
     }
 }

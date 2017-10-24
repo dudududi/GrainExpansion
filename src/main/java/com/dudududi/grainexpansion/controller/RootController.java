@@ -4,17 +4,15 @@ import com.dudududi.grainexpansion.controller.randomizable.PseudoRandomize;
 import com.dudududi.grainexpansion.model.cells.Cell;
 import com.dudududi.grainexpansion.model.CellAutomaton;
 import com.dudududi.grainexpansion.model.cells.CellState;
-import com.dudududi.grainexpansion.model.neighbourhoods.*;
+import com.dudududi.grainexpansion.model.definables.neighbourhood.MooreNeighbourhood;
 import com.dudududi.grainexpansion.model.rules.StaticRecrystallizationRule;
-import com.dudududi.grainexpansion.model.neighbourhoods.CellNeighbourhood;
+import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -90,7 +88,7 @@ public class RootController {
     private ComboBox<String> selectInclusionsType;
 
 
-    private CellNeighbourhood neighbourhood;
+    private NeighbourhoodType neighbourhood;
     private CellAutomaton cellAutomaton;
     private FileChooser fileChooser;
     private Stage stage;

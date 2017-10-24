@@ -1,7 +1,6 @@
 package com.dudududi.grainexpansion.model.rules;
 
 import com.dudududi.grainexpansion.model.cells.Cell;
-import com.dudududi.grainexpansion.model.cells.CellState;
 import javafx.scene.paint.Color;
 
 import java.util.Map;
@@ -10,10 +9,9 @@ import java.util.stream.Collectors;
 /**
  * Created by dudek on 4/28/16.
  */
-@SuppressWarnings("all") //TODO: to be removed and refactored
 public class StaticRecrystallizationRule implements Rule {
     @Override
-    public CellState shouldCellBeAlive(Cell cell) {
+    public Cell.State determineState(Cell cell) {
         if (cell.isAlive() || cell.getState().getType().equals(CellState.Type.INCLUSION)) return null;
         Map<Color, Long> counts =  cell.getNeighbourhood().stream()
                 .filter(c -> c.isAlive() && !c.getState().getType().equals(CellState.Type.INCLUSION))

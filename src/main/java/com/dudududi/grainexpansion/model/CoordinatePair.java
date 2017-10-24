@@ -6,7 +6,8 @@ import java.util.Objects;
  * Created by dudek on 4/27/16.
  */
 public class CoordinatePair {
-    public int x, y;
+    public final int x;
+    public final int y;
 
     public CoordinatePair(int dx, int dy) {
         this.x = dx;

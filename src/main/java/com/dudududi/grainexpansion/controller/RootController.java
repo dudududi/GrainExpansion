@@ -5,6 +5,7 @@ import com.dudududi.grainexpansion.model.cells.Cell;
 import com.dudududi.grainexpansion.model.CellAutomaton;
 import com.dudududi.grainexpansion.model.cells.CellState;
 import com.dudududi.grainexpansion.model.neighbourhoods.*;
+import com.dudududi.grainexpansion.model.rules.ExtendedMoore;
 import com.dudududi.grainexpansion.model.rules.StaticRecrystallizationRule;
 import com.dudududi.grainexpansion.model.neighbourhoods.CellNeighbourhood;
 import com.dudududi.grainexpansion.model.rules.Rule;
@@ -181,7 +182,7 @@ public class RootController {
     }
 
     private void configureAnimation(){
-        Rule automatonRule = new StaticRecrystallizationRule();
+        Rule automatonRule = new ExtendedMoore(10);
         Timeline animation = new Timeline(new KeyFrame(Duration.millis(90), event -> cellAutomaton.next(automatonRule)));
         animation.setCycleCount(Timeline.INDEFINITE);
         startButton.setToggleGroup(new ToggleGroup());

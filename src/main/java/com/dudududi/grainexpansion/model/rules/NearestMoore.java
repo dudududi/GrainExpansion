@@ -5,44 +5,42 @@ import com.dudududi.grainexpansion.model.cells.CellState;
 import javafx.scene.paint.Color;
 
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
- * Created by dudek on 4/28/16.
+ * Created by dudek on 10/29/17.
  */
-@SuppressWarnings("all") //TODO: to be removed and refactored
-public class StaticRecrystallizationRule implements Rule {
-    private int probability;
-    private Random random;
-    public StaticRecrystallizationRule(int probability) {
-        this.probability = probability;
-        this.random = new Random();
+public class NearestMoore extends FurtherMoore {
+    public NearestMoore(int probability) {
+        super(probability);
     }
+
     @Override
     public CellState shouldCellBeAlive(Cell cell) {
-        if (cell.isAlive() || cell.getState().getType().equals(CellState.Type.INCLUSION)) return null;
         Map<Color, Long> counts =  cell.getNeighbourhood().stream()
                 .filter(c -> c.isAlive() && !c.getState().getType().equals(CellState.Type.INCLUSION))
+                .filter(c -> nearestOnly(cell, c))
                 .collect(Collectors.groupingBy(Cell::getColor, Collectors.counting()));
+
         if (counts.size() == 0) return null;
         Color color = counts.entrySet().stream()
                 .max((e1, e2) -> e1.getValue().compareTo(e2.getValue()))
                 .get()
                 .getKey();
-        return willBeAlive() ? new CellState(color, CellState.Type.ALIVE) : null;
+        long colorCount = counts.get(color);
+        if (colorCount == 3) {
+            return new CellState(color, CellState.Type.ALIVE);
+        }
+        return super.shouldCellBeAlive(cell);
     }
 
     @Override
     public boolean isCellOnBoundary(Cell cell) {
-        return cell.getNeighbourhood().stream()
-                .anyMatch(c -> !(c.getColor().equals(cell.getColor()) && cell.isAlive()));
+        return false;
     }
 
-    private boolean willBeAlive() {
-        if (probability == 100) return true;
-
-        int rand = random.nextInt(100);
-        return rand <= probability;
+    private boolean nearestOnly(Cell origin, Cell neighbour) {
+        return  ((Math.abs(origin.getPosition().x - neighbour.getPosition().x) == 1 ^ Math.abs(origin.getPosition().y - neighbour.getPosition().y) == 0) ||
+                (Math.abs(origin.getPosition().x - neighbour.getPosition().x) == 0 ^ Math.abs(origin.getPosition().y - neighbour.getPosition().y) == 1));
     }
 }

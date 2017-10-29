@@ -7,6 +7,4 @@ import com.dudududi.grainexpansion.model.cells.Cell;
  */
 public interface Rule {
     Cell.State determineState(Cell cell);
-
-    boolean isCellOnBoundary(Cell cell);
 }

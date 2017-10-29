@@ -1,11 +1,9 @@
 package com.dudududi.grainexpansion.model;
 
-import com.dudududi.grainexpansion.model.cells.AutomatonBoard;
+import com.dudududi.grainexpansion.model.cells.Board;
 import com.dudududi.grainexpansion.model.cells.Cell;
-import com.dudududi.grainexpansion.model.cells.CellState;
 import com.dudududi.grainexpansion.model.definables.Definable;
 import com.dudududi.grainexpansion.model.definables.neighbourhood.MooreNeighbourhood;
-import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.scene.paint.Color;
 import org.apache.commons.csv.CSVFormat;
@@ -18,52 +16,44 @@ import java.io.Reader;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by dudek on 4/21/16.
  */
 public class CellAutomaton {
-    private AutomatonBoard board;
+    private Board board;
     private int width, height;
-    private List<CoordinatePair> boundaryIndices;
 
-    public CellAutomaton(NeighbourhoodType neighbourhoodType, int width, int height) {
-        this(new AutomatonBoard(width, height, neighbourhoodType));
-    }
-
-    private CellAutomaton(AutomatonBoard board){
+    public CellAutomaton(Board board){
         this.board = board;
+        this.width = board.getWidth();
+        this.height = board.getHeight();
     }
 
     public void next(Rule rule) {
         Cell.State[][] nextStep = new Cell.State[width][height];
-        boundaryIndices = new ArrayList<>();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Cell cell = board.getCell(new CoordinatePair(i, j));
-                nextStep[i][j] = rule.shouldCellBeAlive(cell);
-                if (rule.isCellOnBoundary(cell)) {
-                    boundaryIndices.add(cell.getPosition());
-                }
+                nextStep[i][j] = rule.determineState(cell);
             }
         }
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                board.getCell(new CoordinatePair(i, j)).setState(nextStep[i][j]);
+                if (nextStep[i][j] != null) {
+                    board.getCell(new CoordinatePair(i, j)).setState(nextStep[i][j]);
+                }
             }
         }
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     public void clear() {
         board.resetAll();
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 
     public void printToCSVFile(Appendable out) {
@@ -81,7 +71,7 @@ public class CellAutomaton {
             CSVRecord sizeRecord = records.remove(0);
             int width = Integer.parseInt(sizeRecord.get(0));
             int height = Integer.parseInt(sizeRecord.get(1));
-            AutomatonBoard board = AutomatonBoard.restoreFromCSVRecords(records, width, height, new MooreNeighbourhood(true));
+            Board board = Board.restoreFromCSVRecords(records, width, height);
             return new CellAutomaton(board);
         } catch (IOException e){
             Logger.getGlobal().log(Level.ALL, "Unable to read CSV file", e);
@@ -91,15 +81,24 @@ public class CellAutomaton {
 
     public void addInclusions(int amount, Definable shape) {
         Random random = new Random();
+        List<Cell> boundaryCells = findBoundaryCells();
         for (int i = 0; i < amount; i ++) {
-            int positionIndex = random.nextInt(boundaryIndices.size());
-            CoordinatePair position = boundaryIndices.get(positionIndex);
+            int positionIndex = random.nextInt(boundaryCells.size());
+            CoordinatePair position = boundaryCells.get(positionIndex).getPosition();
             board.printShape(shape, position, new Cell.State(Cell.Phase.INCLUSION, Color.BLACK));
         }
     }
 
-    public void addOnChangeListener(){
-
+    private List<Cell> findBoundaryCells() {
+        return board.getCells()
+                .stream()
+                .filter(this::isCellOnBoundary)
+                .collect(Collectors.toList());
     }
 
+    private boolean isCellOnBoundary(Cell cell) {
+        MooreNeighbourhood neighbourhood = new MooreNeighbourhood(board);
+        return neighbourhood.getNeighbourhood(cell)
+                .anyMatch(c -> !(c.getState().equals(cell.getState()) && cell.isAlive()));
+    }
 }

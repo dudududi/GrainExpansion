@@ -1,256 +1,116 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.controller.randomizable.PseudoRandomize;
-import com.dudududi.grainexpansion.model.cells.Cell;
 import com.dudududi.grainexpansion.model.CellAutomaton;
-import com.dudududi.grainexpansion.model.cells.CellState;
-import com.dudududi.grainexpansion.model.definables.neighbourhood.MooreNeighbourhood;
-import com.dudududi.grainexpansion.model.rules.StaticRecrystallizationRule;
-import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
-import com.dudududi.grainexpansion.model.rules.Rule;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.event.ActionEvent;
+import javafx.scene.Scene;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class RootController {
-    private static final int DEFAULT_WIDTH = 400;
-    private static final int DEFAULT_HEIGHT = 400;
-    private static final int DEFAULT_NUCLEONS_NUMBER = 25;
+/**
+ * Created by dudek on 10/22/17.
+ */
+public class RootController{
 
-    private List<Node> disableNodes;
-    private WritableImage image;
+    private static final String MENU_BAR_SELECTOR = "#menuBar";
+    private static final String IMPORT_BUTTON_SELECTOR = "importButton";
+    private static final String EXPORT_BUTTON_SELECTOR = "exportButton";
+    private static final String CSV_FORMAT_EXTENSION = "*.csv";
+    private static final String CSV_FORMAT_DESCRIPTION = "CSV file";
+    private static final String DEFAULT_IMAGE_FORMAT = "png";
+    private static final String PNG_FORMAT_EXTENSION = "*." + DEFAULT_IMAGE_FORMAT;
+    private static final String PNG_FORMAT_DESCRIPTION = "PNG file";
 
-    @FXML
-    private ImageView board;
-
-    @FXML
-    private ToggleButton startButton;
-
-    @FXML
-    private TextField widthField;
-
-    @FXML
-    private TextField heightField;
-
-    @FXML
-    private TextField nucleonsField;
-
-    @FXML
-    private TextField inclusionsField;
-
-    @FXML
-    private TextField inclusionsSize;
-
-    @FXML
-    private Button clearButton;
-
-    @FXML
-    private Button generateButton;
-
-    @FXML
-    private Button randomizeButton;
-
-    @FXML
-    private Button inclusionsButton;
-
-    @FXML
-    private CheckBox periodicBC;
-
-    @FXML
-    private MenuItem importButton;
-
-    @FXML
-    private MenuItem exportButton;
-
-    @FXML
-    private ComboBox<String> selectInclusionsType;
-
-
-    private NeighbourhoodType neighbourhood;
-    private CellAutomaton cellAutomaton;
     private FileChooser fileChooser;
-    private Stage stage;
+    private Scene scene;
+    private AutomatonController automatonController;
+    private BoardController boardController;
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
 
-    @FXML
-    private void initialize() {
-        collectNodes();
-        neighbourhood = new MooreNeighbourhood();
-        cellAutomaton = new CellAutomaton(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        generateAutomaton();
-
-        widthField.setText(Integer.toString(DEFAULT_WIDTH));
-        heightField.setText(Integer.toString(DEFAULT_HEIGHT));
-        nucleonsField.setText(Integer.toString(DEFAULT_NUCLEONS_NUMBER));
-
-        generateButton.setOnMouseClicked(event -> {
-            cellAutomaton.clear();
-            int width = Integer.valueOf(widthField.getText());
-            int height = Integer.valueOf(heightField.getText());
-            cellAutomaton = new CellAutomaton(width, height);
-            generateAutomaton();
-        });
-
-        periodicBC.setSelected(true);
-        periodicBC.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            neighbourhood.setPeriodic(newValue);
-            cellAutomaton.init(neighbourhood);
-        });
-
-        randomizeButton.setOnMouseClicked(event ->
-                new PseudoRandomize()
-                        .randomize(cellAutomaton, Integer.parseInt(nucleonsField.getText()), 0));
-
-        clearButton.setOnMouseClicked(event -> cellAutomaton.clear());
-
-        configureAnimation();
+    public void init(Scene scene) {
+        this.scene = scene;
+        this.boardController = new BoardController(scene);
+        this.automatonController = new AutomatonController(scene, boardController);
+        this.fileChooser = new FileChooser();
         configureFileChooser();
-        configureImportExportOptions();
-        configureInclusions();
+        MenuBar menuBar = (MenuBar) scene.lookup(MENU_BAR_SELECTOR);
+        menuBar.getMenus()
+                .get(0)
+                .getItems()
+                .forEach(this::configureMenuItem);
     }
 
-    private void generateAutomaton() {
-        image = new WritableImage(cellAutomaton.getWidth(), cellAutomaton.getHeight());
-        Cell[][] cells = cellAutomaton.getCells();
-        for (int i = 0; i < cellAutomaton.getWidth(); i++) {
-            for (int j = 0; j < cellAutomaton.getHeight(); j++) {
-                Cell cell = cells[i][j];
-                int m = i, n = j;
-                cell.getAliveProperty().addListener(((observable, wasAlive, willBeAlive) -> {
-                    if (willBeAlive) {
-                        image.getPixelWriter().setColor(m, n, cell.getColor());
-                    } else {
-                        cell.setState(new CellState(Color.WHITE, CellState.Type.DEAD));
-                        image.getPixelWriter().setColor(m, n, Color.WHITE);
-                    }
-                }));
-                image.getPixelWriter().setColor(i, j, cell.getColor());
-            }
+
+    private void configureMenuItem(MenuItem menuItem) {
+        switch (menuItem.getId()) {
+            case IMPORT_BUTTON_SELECTOR:
+                menuItem.setOnAction(this::importButtonClicked);
+                break;
+            case EXPORT_BUTTON_SELECTOR:
+                menuItem.setOnAction(this::exportButtonClicked);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
-        board.setImage(image);
-        board.setFitWidth(cellAutomaton.getWidth());
-        board.setFitHeight(cellAutomaton.getHeight());
-        board.onMouseClickedProperty().setValue(event -> {
-            int x = (int)event.getX(), y = (int)event.getY();
-            Cell cell = cells[x][y];
-            if (cell.isAlive()){
-                cell.setAlive(false);
-            } else {
-                cell.setAliveWithRandomColor();
-            }
-        });
-        cellAutomaton.init(neighbourhood);
-    }
-
-    private void collectNodes(){
-        disableNodes = new ArrayList<>();
-        disableNodes.add(widthField);
-        disableNodes.add(heightField);
-        disableNodes.add(generateButton);
-        disableNodes.add(periodicBC);
-        disableNodes.add(nucleonsField);
-        disableNodes.add(randomizeButton);
-        disableNodes.add(clearButton);
-    }
-
-    private void configureAnimation(){
-        Rule automatonRule = new StaticRecrystallizationRule();
-        Timeline animation = new Timeline(new KeyFrame(Duration.millis(90), event -> cellAutomaton.next(automatonRule)));
-        animation.setCycleCount(Timeline.INDEFINITE);
-        startButton.setToggleGroup(new ToggleGroup());
-        startButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                animation.stop();
-                disableNodes.forEach(node -> node.setDisable(false));
-                startButton.setText("START");
-            } else {
-                animation.play();
-                disableNodes.forEach(node -> node.setDisable(true));
-                startButton.setText("STOP");
-            }
-        });
-    }
-
-    private void configureImportExportOptions() {
-        exportButton.setOnAction(event -> {
-            fileChooser.setTitle("Select export destination");
-            File file = fileChooser.showSaveDialog(stage);
-            FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
-            try (FileWriter fileWriter = new FileWriter(file)) {
-                if ("CSV file".equals(selectedExtension.getDescription())) {
-                    cellAutomaton.printToCSVFile(fileWriter);
-                } else {
-                    ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-                }
-            } catch (IOException e){
-                Logger.getGlobal().log(Level.ALL, "Unable to export file", e);
-            }
-        });
-
-        importButton.setOnAction(event -> {
-            fileChooser.setTitle("Select file to import");
-            File file = fileChooser.showOpenDialog(stage);
-            FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
-            try(FileReader fileReader = new FileReader(file)) {
-                if ("CSV file".equals(selectedExtension.getDescription())) {
-                    cellAutomaton.clear();
-                    cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
-                    generateAutomaton();
-                    widthField.setText(Integer.toString(cellAutomaton.getWidth()));
-                    heightField.setText(Integer.toString(cellAutomaton.getHeight()));
-                    configureAnimation();
-                } else {
-                    Image importedImg = new Image(file.toURI().toString());
-                    board.setImage(importedImg);
-                }
-            } catch (IOException e) {
-                Logger.getGlobal().log(Level.ALL, "Unable to import file", e);
-            }
-        });
     }
 
     private void configureFileChooser() {
-        fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("CSV file", "*.csv"),
-                new FileChooser.ExtensionFilter("PNG file", "*.png"));
+                new FileChooser.ExtensionFilter(CSV_FORMAT_DESCRIPTION, CSV_FORMAT_EXTENSION),
+                new FileChooser.ExtensionFilter(PNG_FORMAT_DESCRIPTION, PNG_FORMAT_EXTENSION));
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
     }
+    @SuppressWarnings("unused")
+    private void exportButtonClicked(ActionEvent event) {
+        fileChooser.setTitle("Select export destination");
+        File file = fileChooser.showSaveDialog(scene.getWindow());
+        FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            switch (selectedExtension.getDescription()) {
+                case CSV_FORMAT_DESCRIPTION:
+                    automatonController.getCellAutomaton().printToCSVFile(fileWriter);
+                    break;
+                case PNG_FORMAT_DESCRIPTION:
+                    ImageIO.write(boardController.getRenderedImage(), DEFAULT_IMAGE_FORMAT, file);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        } catch (IOException e){
+            Logger.getGlobal().log(Level.ALL, "Unable to export file", e);
+        }
+    }
 
-    private void configureInclusions(){
-        ObservableList<String> inclusionsTypes = FXCollections.observableArrayList("Square", "Circular");
-        selectInclusionsType.getItems().addAll(inclusionsTypes);
-        selectInclusionsType.getSelectionModel().selectFirst();
-        inclusionsButton.setOnMouseClicked(event -> {
-            int inclusionsAmount = Integer.valueOf(inclusionsField.getText());
-            int size = Integer.valueOf(inclusionsSize.getText());
-            boolean isCircular = selectInclusionsType.getSelectionModel().getSelectedItem().equals("Circular");
-            cellAutomaton.addInclusions(inclusionsAmount, size, isCircular);
-        });
+    @SuppressWarnings("unused")
+    private void importButtonClicked(ActionEvent event) {
+        fileChooser.setTitle("Select file to import");
+        File file = fileChooser.showOpenDialog(scene.getWindow());
+        FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
+        try(FileReader fileReader = new FileReader(file)) {
+            switch (selectedExtension.getDescription()) {
+                case CSV_FORMAT_DESCRIPTION:
+                    CellAutomaton cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
+                    boardController.reload(cellAutomaton.getBoard());
+                    automatonController.reload(cellAutomaton);
+                    break;
+                case PNG_FORMAT_DESCRIPTION:
+                    Image importedImg = new Image(file.toURI().toString());
+                    boardController.reloadBoardWithImage(importedImg);
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        } catch (IOException e) {
+            Logger.getGlobal().log(Level.ALL, "Unable to import file", e);
+        }
     }
 }

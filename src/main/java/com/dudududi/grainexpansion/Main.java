@@ -27,12 +27,14 @@ public class Main extends Application {
     }
 
     private void initRoot() throws IOException {
+        RootController controller = new RootController();
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getClassLoader().getResource("layout/root.fxml"));
+        loader.setLocation(Main.class.getClassLoader().getResource("layout/root_layout.fxml"));
+        loader.setController(controller);
         this.root = loader.load();
-        RootController controller = loader.getController();
-        controller.setStage(primaryStage);
-        this.primaryStage.setScene(new Scene(root, 800, 600));
+        Scene scene = new Scene(root, 800, 600);
+        this.primaryStage.setScene(scene);
         this.primaryStage.show();
+        controller.init(scene);
     }
 }

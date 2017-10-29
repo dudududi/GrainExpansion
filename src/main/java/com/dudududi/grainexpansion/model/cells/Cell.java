@@ -13,9 +13,6 @@ import java.util.*;
  */
 public class Cell {
     public static final String[] CSV_HEADERS = new String[]{"x", "y", "color", "state"};
-    private static final State DEFAULT_STATE = new State(Phase.DEAD, Color.WHITE);
-
-    private List<Cell> neighbourhood;
 
     private ObjectProperty<Color> colorProperty;
     private CoordinatePair position;
@@ -23,7 +20,8 @@ public class Cell {
 
     public Cell(CoordinatePair position) {
         this.position = position;
-        setState(DEFAULT_STATE);
+        this.colorProperty = new SimpleObjectProperty<>(Color.WHITE);
+        setState(new State(Phase.DEAD, Color.WHITE));
     }
 
     public ObjectProperty<Color> colorProperty() {
@@ -40,7 +38,7 @@ public class Cell {
     }
 
     public void reset() {
-        setState(DEFAULT_STATE);
+        setState(new State(Phase.DEAD, Color.WHITE));
     }
 
 
@@ -48,16 +46,12 @@ public class Cell {
         return state.phase == Phase.ALIVE;
     }
 
+    public boolean isInclusion() {
+        return state.phase == Phase.INCLUSION;
+    }
+
     public State getState() {
         return state;
-    }
-
-    public List<Cell> getNeighbourhood() {
-        return neighbourhood;
-    }
-
-    public void setNeighbourhood(List<Cell> neighbourhood) {
-        this.neighbourhood = neighbourhood;
     }
 
     public Iterable<String> toCSVRecord() {
@@ -108,6 +102,10 @@ public class Cell {
         public State(Phase phase, Color color) {
             this.phase = phase;
             this.color = color;
+        }
+
+        public static State copyState(State state) {
+            return new State(state.phase, state.color);
         }
 
         @Override

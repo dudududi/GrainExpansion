@@ -10,10 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Created by dudek on 10/29/17.
  */
-public class FurtherMoore extends StaticRecrystallizationRule{
-    public FurtherMoore(int probability) {
-        super(probability);
-    }
+public class FurtherMoore extends SimpleMoore {
 
     @Override
     public CellState shouldCellBeAlive(Cell cell) {

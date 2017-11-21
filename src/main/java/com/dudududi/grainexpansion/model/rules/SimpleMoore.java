@@ -12,18 +12,18 @@ import java.util.stream.Collectors;
  * Created by dudek on 4/28/16.
  */
 @SuppressWarnings("all") //TODO: to be removed and refactored
-public class StaticRecrystallizationRule implements Rule {
+public class SimpleMoore implements Rule {
     private int probability;
     private Random random;
-    public StaticRecrystallizationRule(int probability) {
-        this.probability = probability;
+    public SimpleMoore() {
+        this.probability = 100;
         this.random = new Random();
     }
     @Override
     public CellState shouldCellBeAlive(Cell cell) {
-        if (cell.isAlive() || cell.getState().getType().equals(CellState.Type.INCLUSION)) return null;
+        if (!cell.getState().getType().equals(CellState.Type.DEAD)) return null; // if not dead...
         Map<Color, Long> counts =  cell.getNeighbourhood().stream()
-                .filter(c -> c.isAlive() && !c.getState().getType().equals(CellState.Type.INCLUSION))
+                .filter(c -> c.isAlive())
                 .collect(Collectors.groupingBy(Cell::getColor, Collectors.counting()));
         if (counts.size() == 0) return null;
         Color color = counts.entrySet().stream()
@@ -44,5 +44,14 @@ public class StaticRecrystallizationRule implements Rule {
 
         int rand = random.nextInt(100);
         return rand <= probability;
+    }
+
+    public void setProbability(int probability) {
+        this.probability = probability;
+    }
+
+    @Override
+    public String toString() {
+        return "Simple";
     }
 }

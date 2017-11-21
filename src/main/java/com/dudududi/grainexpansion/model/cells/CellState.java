@@ -26,7 +26,10 @@ public class CellState {
     public enum Type {
         DEAD(0),
         ALIVE(1),
-        INCLUSION(2);
+        INCLUSION(2),
+        SUBSTRUCTURE(3),
+        DUAL_PHASE(4),
+        BOUNDARY(5);
 
         private final int stateId;
 

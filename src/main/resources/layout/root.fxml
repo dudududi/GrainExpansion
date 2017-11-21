@@ -27,31 +27,42 @@
           </Menu>
         </menus>
       </MenuBar>
-      <SplitPane dividerPositions="0.36215538847117795" prefHeight="600.0" prefWidth="800.0">
+      <SplitPane dividerPositions="0.36215538847117795" prefHeight="722.0" prefWidth="800.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="598.0" prefWidth="318.0">
                <children>
-                  <CheckBox fx:id="periodicBC" layoutX="46.0" layoutY="90.0" mnemonicParsing="false" text="Periodic boundary condition" />
-                  <ToggleButton fx:id="startButton" layoutX="27.0" layoutY="458.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="101.0" text="START" />
+                  <CheckBox fx:id="periodicBC" layoutX="46.0" layoutY="88.0" mnemonicParsing="false" text="Periodic boundary condition" />
+                  <ToggleButton fx:id="startButton" layoutX="31.0" layoutY="628.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="101.0" text="START" />
                   <Label layoutX="25.0" layoutY="25.0" text="Width:" />
                   <Label layoutX="25.0" layoutY="57.0" text="Height:" />
                   <TextField fx:id="widthField" layoutX="146.0" layoutY="20.0" prefHeight="27.0" prefWidth="123.0" />
                   <TextField fx:id="heightField" layoutX="146.0" layoutY="52.0" prefHeight="27.0" prefWidth="123.0" />
-                  <Separator layoutY="264.0" prefHeight="7.0" prefWidth="285.0" />
-                  <Button fx:id="clearButton" layoutX="160.0" layoutY="458.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="95.0" text="Clean" />
-                  <Button fx:id="generateButton" layoutX="23.0" layoutY="121.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="247.0" text="Generate mesh" />
-                  <Separator layoutX="4.0" layoutY="160.0" prefHeight="1.0" prefWidth="285.0" />
-                  <Button fx:id="randomizeButton" layoutX="23.0" layoutY="222.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="247.0" text="Randomize" />
-                  <Label layoutX="22.0" layoutY="180.0" text="Nucleons amount:" />
-                  <TextField fx:id="nucleonsField" layoutX="143.0" layoutY="175.0" prefHeight="27.0" prefWidth="123.0" text="10" />
-                  <Separator layoutY="432.0" prefHeight="7.0" prefWidth="285.0" />
-                  <TextField fx:id="inclusionsField" layoutX="143.0" layoutY="286.0" prefHeight="27.0" prefWidth="123.0" text="8" />
-                  <Label layoutX="14.0" layoutY="291.0" text="Inclusions amount:" />
-                  <Button fx:id="inclusionsButton" layoutX="21.0" layoutY="395.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="247.0" text="Add inclusions" />
-                  <TextField fx:id="inclusionsSize" layoutX="143.0" layoutY="320.0" prefHeight="27.0" prefWidth="123.0" text="8" />
-                  <Label layoutX="17.0" layoutY="325.0" text="Inclusions size:" />
-                  <ComboBox fx:id="selectInclusionsType" layoutX="146.0" layoutY="356.0" prefHeight="27.0" prefWidth="115.0" />
-                  <Label layoutX="16.0" layoutY="361.0" text="Inclusions type:" />
+                  <Separator layoutY="245.0" prefHeight="7.0" prefWidth="285.0" />
+                  <Button fx:id="clearButton" layoutX="160.0" layoutY="628.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="95.0" text="Clean" />
+                  <Button fx:id="generateButton" layoutX="23.0" layoutY="114.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="247.0" text="Generate mesh" />
+                  <Separator layoutX="4.0" layoutY="150.0" prefHeight="1.0" prefWidth="285.0" />
+                  <Button fx:id="randomizeButton" layoutX="23.0" layoutY="203.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="247.0" text="Randomize" />
+                  <Label layoutX="22.0" layoutY="169.0" text="Nucleons amount:" />
+                  <TextField fx:id="nucleonsField" layoutX="143.0" layoutY="164.0" prefHeight="27.0" prefWidth="123.0" text="10" />
+                  <Separator layoutY="408.0" prefHeight="7.0" prefWidth="285.0" />
+                  <TextField fx:id="inclusionsField" layoutX="143.0" layoutY="259.0" prefHeight="27.0" prefWidth="123.0" text="8" />
+                  <Label layoutX="14.0" layoutY="264.0" text="Inclusions amount:" />
+                  <Button fx:id="inclusionsButton" layoutX="21.0" layoutY="368.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="247.0" text="Add inclusions" />
+                  <TextField fx:id="inclusionsSize" layoutX="143.0" layoutY="293.0" prefHeight="27.0" prefWidth="123.0" text="8" />
+                  <Label layoutX="17.0" layoutY="298.0" text="Inclusions size:" />
+                  <ComboBox fx:id="selectInclusionsType" layoutX="146.0" layoutY="329.0" prefHeight="27.0" prefWidth="115.0" />
+                  <Label layoutX="16.0" layoutY="334.0" text="Inclusions type:" />
+                  <Label layoutX="21.0" layoutY="425.0" text="CA type:" />
+                  <ComboBox fx:id="selectRuleType" layoutX="148.0" layoutY="420.0" prefHeight="27.0" prefWidth="115.0" />
+                  <Label layoutX="18.0" layoutY="461.0" text="Probability:" />
+                  <TextField fx:id="ruleProbabilityField" layoutX="142.0" layoutY="456.0" prefHeight="27.0" prefWidth="123.0" text="100" />
+                  <Separator layoutX="2.0" layoutY="495.0" prefHeight="7.0" prefWidth="285.0" />
+                  <ComboBox fx:id="selectStructureType" layoutX="150.0" layoutY="508.0" prefHeight="27.0" prefWidth="115.0" />
+                  <Label layoutX="22.0" layoutY="513.0" text="Structure:" />
+                  <Separator layoutX="1.0" layoutY="615.0" prefHeight="7.0" prefWidth="285.0" />
+                  <Button fx:id="colorBoundariesButton" layoutX="68.0" layoutY="583.0" mnemonicParsing="false" text="Color all boundaries" />
+                  <TextField fx:id="boundariesSizeField" layoutX="145.0" layoutY="543.0" prefHeight="27.0" prefWidth="123.0" text="1" />
+                  <Label layoutX="21.0" layoutY="548.0" text="Boundaries size:" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="598.0" prefWidth="548.0">

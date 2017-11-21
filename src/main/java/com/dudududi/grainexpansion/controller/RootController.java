@@ -6,16 +6,15 @@ import com.dudududi.grainexpansion.model.CellAutomaton;
 import com.dudududi.grainexpansion.model.cells.CellState;
 import com.dudududi.grainexpansion.model.neighbourhoods.*;
 import com.dudududi.grainexpansion.model.rules.ExtendedMoore;
-import com.dudududi.grainexpansion.model.rules.StaticRecrystallizationRule;
+import com.dudududi.grainexpansion.model.rules.SimpleMoore;
 import com.dudududi.grainexpansion.model.neighbourhoods.CellNeighbourhood;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -44,6 +43,7 @@ public class RootController {
 
     private List<Node> disableNodes;
     private WritableImage image;
+    private Rule automatonRule;
 
     @FXML
     private ImageView board;
@@ -67,6 +67,12 @@ public class RootController {
     private TextField inclusionsSize;
 
     @FXML
+    private TextField ruleProbabilityField;
+
+    @FXML
+    private TextField boundariesSizeField;
+
+    @FXML
     private Button clearButton;
 
     @FXML
@@ -79,6 +85,9 @@ public class RootController {
     private Button inclusionsButton;
 
     @FXML
+    private Button colorBoundariesButton;
+
+    @FXML
     private CheckBox periodicBC;
 
     @FXML
@@ -88,7 +97,13 @@ public class RootController {
     private MenuItem exportButton;
 
     @FXML
+    private ComboBox<SimpleMoore> selectRuleType;
+
+    @FXML
     private ComboBox<String> selectInclusionsType;
+
+    @FXML
+    private ComboBox<String> selectStructureType;
 
 
     private CellNeighbourhood neighbourhood;
@@ -112,7 +127,7 @@ public class RootController {
         nucleonsField.setText(Integer.toString(DEFAULT_NUCLEONS_NUMBER));
 
         generateButton.setOnMouseClicked(event -> {
-            cellAutomaton.clear();
+            cellAutomaton.clear(true);
             int width = Integer.valueOf(widthField.getText());
             int height = Integer.valueOf(heightField.getText());
             cellAutomaton = new CellAutomaton(width, height);
@@ -129,12 +144,21 @@ public class RootController {
                 new PseudoRandomize()
                         .randomize(cellAutomaton, Integer.parseInt(nucleonsField.getText()), 0));
 
-        clearButton.setOnMouseClicked(event -> cellAutomaton.clear());
+        clearButton.setOnMouseClicked(event -> {
+            cellAutomaton.clear(selectStructureType.getSelectionModel().getSelectedItem().equals("None"));
+        });
+
+        colorBoundariesButton.setOnMouseClicked(event -> {
+            int boundariesSize = Integer.valueOf(boundariesSizeField.getText());
+            cellAutomaton.colorBoundaries(boundariesSize);
+        });
 
         configureAnimation();
         configureFileChooser();
         configureImportExportOptions();
         configureInclusions();
+        configureRules();
+        configureStructures();
     }
 
     private void generateAutomaton() {
@@ -161,10 +185,11 @@ public class RootController {
         board.onMouseClickedProperty().setValue(event -> {
             int x = (int)event.getX(), y = (int)event.getY();
             Cell cell = cells[x][y];
-            if (cell.isAlive()){
-                cell.setAlive(false);
-            } else {
+            if (!cell.isAlive()){
                 cell.setAliveWithRandomColor();
+            } else {
+                int boundarySize = Integer.valueOf(boundariesSizeField.getText());
+                cellAutomaton.changeStateForGrain(cell, selectStructureType.getSelectionModel().getSelectedItem(), boundarySize);
             }
         });
         cellAutomaton.init(neighbourhood);
@@ -179,10 +204,19 @@ public class RootController {
         disableNodes.add(nucleonsField);
         disableNodes.add(randomizeButton);
         disableNodes.add(clearButton);
+        disableNodes.add(inclusionsButton);
+        disableNodes.add(inclusionsField);
+        disableNodes.add(inclusionsSize);
+        disableNodes.add(ruleProbabilityField);
+        disableNodes.add(selectRuleType);
+        disableNodes.add(selectInclusionsType);
+        disableNodes.add(selectStructureType);
+        disableNodes.add(boundariesSizeField);
+        disableNodes.add(colorBoundariesButton);
     }
 
     private void configureAnimation(){
-        Rule automatonRule = new ExtendedMoore(10);
+        automatonRule = new SimpleMoore();
         Timeline animation = new Timeline(new KeyFrame(Duration.millis(90), event -> cellAutomaton.next(automatonRule)));
         animation.setCycleCount(Timeline.INDEFINITE);
         startButton.setToggleGroup(new ToggleGroup());
@@ -221,7 +255,7 @@ public class RootController {
             FileChooser.ExtensionFilter selectedExtension = fileChooser.getSelectedExtensionFilter();
             try(FileReader fileReader = new FileReader(file)) {
                 if ("CSV file".equals(selectedExtension.getDescription())) {
-                    cellAutomaton.clear();
+                    cellAutomaton.clear(true);
                     cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
                     generateAutomaton();
                     widthField.setText(Integer.toString(cellAutomaton.getWidth()));
@@ -255,5 +289,31 @@ public class RootController {
             boolean isCircular = selectInclusionsType.getSelectionModel().getSelectedItem().equals("Circular");
             cellAutomaton.addInclusions(inclusionsAmount, size, isCircular);
         });
+    }
+
+    private void configureRules(){
+        ObservableList<SimpleMoore> ruleTypes =
+                FXCollections.observableArrayList(new SimpleMoore(), new ExtendedMoore());
+        selectRuleType.getItems().addAll(ruleTypes);
+        selectRuleType.getSelectionModel().selectFirst();
+        ChangeListener<SimpleMoore> listener = (observable, oldValue, newValue) -> {
+            int probability = Integer.valueOf(ruleProbabilityField.getText());
+            SimpleMoore selectedRule = selectRuleType.getSelectionModel().getSelectedItem();
+            selectedRule.setProbability(probability);
+            automatonRule = selectedRule;
+        };
+
+        selectRuleType.valueProperty().addListener(listener);
+        ruleProbabilityField.textProperty().addListener((observable, oldValue, newValue) -> {
+            int probability = Integer.valueOf(ruleProbabilityField.getText());
+            ((SimpleMoore) automatonRule).setProbability(probability);
+        });
+    }
+
+    private void configureStructures() {
+        ObservableList<String> structureType = FXCollections.observableArrayList("None",
+                "Substructure", "Dual phase", "Boundary selection");
+        selectStructureType.getItems().addAll(structureType);
+        selectStructureType.getSelectionModel().selectFirst();
     }
 }

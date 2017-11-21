@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
@@ -25,6 +24,7 @@ public class CellAutomaton {
     private Cell[][] cells;
     private int width, height;
     private List<CoordinatePair> boundaryCells;
+    private Map<Color, List<Cell>> grains;
 
     public CellAutomaton(int width, int height) {
         this.width = width;
@@ -37,6 +37,7 @@ public class CellAutomaton {
                 boundaryCells.add(cells[i][j].getPosition());
             }
         }
+        grains = new HashMap<>();
     }
 
     public void init(CellNeighbourhood neighbourhood) {
@@ -75,6 +76,7 @@ public class CellAutomaton {
                 if (nextStep[i][j] != null){
                     cells[i][j].setState(nextStep[i][j]);
                     cells[i][j].setAlive(true);
+                    addCellToGrain(cells[i][j]);
                 }
             }
         }
@@ -84,10 +86,13 @@ public class CellAutomaton {
         return cells;
     }
 
-    public void clear() {
+    public void clear(boolean isForce) {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                cells[i][j].setAlive(false);
+                CellState.Type type = cells[i][j].getState().getType();
+                if (isForce || type.equals(CellState.Type.ALIVE) || type.equals(CellState.Type.INCLUSION)) {
+                    cells[i][j].setAlive(false);
+                }
             }
         }
     }
@@ -150,6 +155,46 @@ public class CellAutomaton {
                     cells[x+k][y+l].setState(new CellState(Color.BLACK, CellState.Type.INCLUSION));
                 }
             }
+        }
+    }
+
+    public void changeStateForGrain(Cell origin, String type, int boundarySize) {
+        if (!grains.containsKey(origin.getColor()) || type.equals("None")) return;
+
+        if (type.equals("Substructure")) {
+            grains.get(origin.getColor()).forEach(cell -> cell.setState(new CellState(cell.getColor(), CellState.Type.SUBSTRUCTURE)));
+        } else if (type.equals("Dual phase")){
+            grains.get(origin.getColor()).forEach(cell -> cell.setState(new CellState(Color.MAGENTA, CellState.Type.DUAL_PHASE)));
+        } else if (type.equals("Boundary selection")) {
+            grains.get(origin.getColor())
+                    .stream()
+                    .map(Cell::getPosition)
+                    .filter(boundaryCells::contains)
+                    .forEach(cell -> drawBoundaries(cell, boundarySize));
+        }
+
+    }
+
+    private void addCellToGrain(Cell cell) {
+        Color color = cell.getColor();
+        if (!grains.containsKey(color)){
+            grains.put(color, new ArrayList<>());
+        }
+        grains.get(color).add(cell);
+    }
+
+    public void colorBoundaries(int size) {
+        boundaryCells.forEach(coord -> drawBoundaries(coord, size));
+    }
+
+    private void drawBoundaries(CoordinatePair coord, int size) {
+        for (int i = -size/2; i <= size/2; i++) {
+            for (int j = -size/2; j <= size/2; j++) {
+                if (coord.x + i > 0 && coord.x + i < width && coord.y + j > 0 && coord.y + j < height) {
+                    cells[coord.x + i][coord.y + j].setState(new CellState(Color.BLACK, CellState.Type.BOUNDARY));
+                }
+            }
+
         }
     }
 

@@ -32,7 +32,7 @@ public class Main extends Application {
         this.root = loader.load();
         RootController controller = loader.getController();
         controller.setStage(primaryStage);
-        this.primaryStage.setScene(new Scene(root, 800, 600));
+        this.primaryStage.setScene(new Scene(root, 800, 700));
         this.primaryStage.show();
     }
 }

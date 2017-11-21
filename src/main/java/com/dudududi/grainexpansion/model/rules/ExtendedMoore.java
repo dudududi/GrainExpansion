@@ -11,9 +11,6 @@ import java.util.stream.Collectors;
  * Created by dudek on 10/29/17.
  */
 public class ExtendedMoore extends NearestMoore {
-    public ExtendedMoore(int probability) {
-        super(probability);
-    }
 
     @Override
     public CellState shouldCellBeAlive(Cell cell) {
@@ -34,7 +31,8 @@ public class ExtendedMoore extends NearestMoore {
     }
 
     @Override
-    public boolean isCellOnBoundary(Cell cell) {
-        return false;
+    public String toString(){
+        return "Extended";
     }
+
 }

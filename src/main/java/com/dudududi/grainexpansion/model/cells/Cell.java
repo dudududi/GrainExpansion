@@ -35,9 +35,7 @@ public class Cell {
     }
 
     public void setState(CellState state) {
-        if(this.state.getType().equals(CellState.Type.ALIVE) && state.getType().equals(CellState.Type.INCLUSION)){
-            setAlive(false);
-        }
+        setAlive(false);
         this.state = state;
         setAlive(!state.getType().equals(CellState.Type.DEAD));
     }
@@ -47,7 +45,7 @@ public class Cell {
     }
 
     public boolean isAlive() {
-        return isAlive.get();
+        return isAlive.get() && state.getType().equals(CellState.Type.ALIVE);
     }
 
     public CellState getState() {

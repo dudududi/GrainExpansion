@@ -95,7 +95,7 @@ public class Cell {
         }
     }
 
-    public static class State{
+    public static class State {
         private final Phase phase;
         private final Color color;
 

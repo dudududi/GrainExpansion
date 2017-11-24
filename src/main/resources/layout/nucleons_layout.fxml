@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="CENTER" minWidth="300.0" prefHeight="23.0" prefWidth="300.0" spacing="10.0"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.dudududi.grainexpansion.controller.NucleonsController">
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+        <Label text="Nucleons amount:"/>
+        <TextField fx:id="nucleonsAmountField" prefHeight="27.0" prefWidth="123.0" text="10"/>
+    </HBox>
+    <Button fx:id="randomizeButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0" text="Randomize"/>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+</VBox>

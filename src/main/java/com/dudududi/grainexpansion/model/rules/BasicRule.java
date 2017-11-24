@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 /**
  * Created by dudek on 4/28/16.
  */
-public class StaticRecrystallizationRule implements Rule {
+public class BasicRule implements Rule {
 
     private NeighbourhoodType neighbourhoodType;
 
-    public StaticRecrystallizationRule(NeighbourhoodType neighbourhoodType) {
+    public BasicRule(NeighbourhoodType neighbourhoodType) {
         this.neighbourhoodType = neighbourhoodType;
     }
 
@@ -26,6 +26,7 @@ public class StaticRecrystallizationRule implements Rule {
         if (cell.isAlive() || cell.isInclusion()) return null;
 
         Optional<Cell.State> mostOccurredState = neighbourhoodType.getNeighbourhood(cell)
+                .stream()
                 .filter(c -> c.isAlive() && !c.isInclusion())
                 .collect(Collectors.groupingBy(Cell::getState, Collectors.counting()))
                 .entrySet()

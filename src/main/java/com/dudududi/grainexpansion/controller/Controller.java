@@ -1,5 +1,6 @@
 package com.dudududi.grainexpansion.controller;
 
+import com.dudududi.grainexpansion.model.CellAutomaton;
 import javafx.scene.Node;
 
 import java.util.List;
@@ -7,7 +8,6 @@ import java.util.List;
 /**
  * Created by dudek on 10/24/17.
  */
-public interface Controller<T> {
-    List<Node> collectDisablingNodes();
-    void reload(T model);
+public interface Controller {
+    void reload(CellAutomaton cellAutomaton);
 }

@@ -17,21 +17,23 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by dudek on 4/21/16.
  */
 public class CellAutomaton {
     private Board board;
-    private int width, height;
+    private List<Observer> observers;
 
-    public CellAutomaton(Board board){
+    public CellAutomaton(Board board) {
         this.board = board;
-        this.width = board.getWidth();
-        this.height = board.getHeight();
+        observers = new ArrayList<>();
     }
 
     public void next(Rule rule) {
+        int width = board.getWidth();
+        int height = board.getHeight();
         Cell.State[][] nextStep = new Cell.State[width][height];
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -57,23 +59,23 @@ public class CellAutomaton {
     }
 
     public void printToCSVFile(Appendable out) {
-        try(CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(Cell.CSV_HEADERS))){
-            printer.printRecord(width, height);
+        try (CSVPrinter printer = new CSVPrinter(out, CSVFormat.DEFAULT.withHeader(Cell.CSV_HEADERS))) {
+            printer.printRecord(board.getWidth(), board.getHeight());
             board.printToCSVFile(printer);
-        } catch (IOException e){
+        } catch (IOException e) {
             Logger.getGlobal().log(Level.ALL, "Unable to create CSV file", e);
         }
     }
 
     public static CellAutomaton fromCSVFile(Reader in) {
-        try(CSVParser parser = new CSVParser(in, CSVFormat.DEFAULT.withHeader(Cell.CSV_HEADERS).withSkipHeaderRecord())){
+        try (CSVParser parser = new CSVParser(in, CSVFormat.DEFAULT.withHeader(Cell.CSV_HEADERS).withSkipHeaderRecord())) {
             List<CSVRecord> records = parser.getRecords();
             CSVRecord sizeRecord = records.remove(0);
             int width = Integer.parseInt(sizeRecord.get(0));
             int height = Integer.parseInt(sizeRecord.get(1));
             Board board = Board.restoreFromCSVRecords(records, width, height);
             return new CellAutomaton(board);
-        } catch (IOException e){
+        } catch (IOException e) {
             Logger.getGlobal().log(Level.ALL, "Unable to read CSV file", e);
             return null;
         }
@@ -82,11 +84,20 @@ public class CellAutomaton {
     public void addInclusions(int amount, Definable shape) {
         Random random = new Random();
         List<Cell> boundaryCells = findBoundaryCells();
-        for (int i = 0; i < amount; i ++) {
+        for (int i = 0; i < amount; i++) {
             int positionIndex = random.nextInt(boundaryCells.size());
             CoordinatePair position = boundaryCells.get(positionIndex).getPosition();
             board.printShape(shape, position, new Cell.State(Cell.Phase.INCLUSION, Color.BLACK));
         }
+    }
+
+    public void reinitializeWithBoard(Board board) {
+        this.board = board;
+        notifyObserversBoardChanged();
+    }
+
+    public void attach(Observer observer) {
+        observers.add(observer);
     }
 
     private List<Cell> findBoundaryCells() {
@@ -99,6 +110,11 @@ public class CellAutomaton {
     private boolean isCellOnBoundary(Cell cell) {
         MooreNeighbourhood neighbourhood = new MooreNeighbourhood(board);
         return neighbourhood.getNeighbourhood(cell)
+                .stream()
                 .anyMatch(c -> !(c.getState().equals(cell.getState()) && cell.isAlive()));
+    }
+
+    private void notifyObserversBoardChanged() {
+        observers.forEach(Observer::onBoardChanged);
     }
 }

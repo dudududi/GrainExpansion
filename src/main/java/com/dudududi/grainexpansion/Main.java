@@ -1,18 +1,22 @@
 package com.dudududi.grainexpansion;
 
-import com.dudududi.grainexpansion.controller.RootController;
+import com.dudududi.grainexpansion.controller.*;
+import com.dudududi.grainexpansion.model.CellAutomaton;
+import com.dudududi.grainexpansion.model.cells.Board;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.io.IOException;
 
 public class Main extends Application {
 
     private Stage primaryStage;
-    private Parent root;
+    private CellAutomaton cellAutomaton;
+    private RootController rootController;
 
     public static void main(String[] args) {
         launch(args);
@@ -20,21 +24,43 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.cellAutomaton = new CellAutomaton(new Board(SpaceGeneratorController.DEFAULT_WIDTH,
+                SpaceGeneratorController.DEFAULT_HEIGHT, SpaceGeneratorController.DEFAULT_PERIODICITY));
+        this.rootController = new RootController(cellAutomaton);
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Static recrystallization");
+        this.primaryStage.setTitle("Grain Expansion");
 
         initRoot();
     }
 
     private void initRoot() throws IOException {
-        RootController controller = new RootController();
         FXMLLoader loader = new FXMLLoader();
+        loader.setControllerFactory(this::dealControllers);
+
         loader.setLocation(Main.class.getClassLoader().getResource("layout/root_layout.fxml"));
-        loader.setController(controller);
-        this.root = loader.load();
+        Parent root = loader.load();
         Scene scene = new Scene(root, 800, 600);
         this.primaryStage.setScene(scene);
+        this.rootController.setScene(scene);
         this.primaryStage.show();
-        controller.init(scene);
+    }
+
+    private Object dealControllers(Class<?> param) {
+        if (param == AnimationController.class) {
+            return new AnimationController(cellAutomaton);
+        } else if (param == BoardController.class) {
+            return new BoardController(cellAutomaton);
+        } else if (param == InclusionsController.class) {
+            return new InclusionsController(cellAutomaton);
+        } else if (param == NucleonsController.class) {
+            return new NucleonsController(cellAutomaton);
+        } else if (param == RootController.class) {
+            return rootController;
+        } else if (param == SpaceGeneratorController.class) {
+            return new SpaceGeneratorController(cellAutomaton);
+        } else {
+            // unsupported controller
+            throw new UnsupportedOperationException("Cannot instantiate " + param.getCanonicalName());
+        }
     }
 }

@@ -22,7 +22,7 @@ public class Board {
     private final int height;
     private final boolean isPeriodic;
 
-    private List<Cell> cellsStream;
+    private List<Cell> cellsList;
 
     public Board(int width, int height, boolean isPeriodic) {
         this.width = width;
@@ -34,11 +34,11 @@ public class Board {
                 cells[i][j] = new Cell(new CoordinatePair(i, j));
             }
         }
-        cellsStream = Arrays.stream(cells).flatMap(Arrays::stream).collect(Collectors.toList());
+        cellsList = Arrays.stream(cells).flatMap(Arrays::stream).collect(Collectors.toList());
     }
 
     public void resetAll() {
-        cellsStream.forEach(Cell::reset);
+        cellsList.forEach(Cell::reset);
     }
 
     public Cell getCell(CoordinatePair position) {
@@ -46,18 +46,18 @@ public class Board {
     }
 
     public List<Cell> getCells() {
-        return cellsStream;
+        return cellsList;
     }
 
-    public int getWidth(){
+    public int getWidth() {
         return width;
     }
 
-    public int getHeight(){
+    public int getHeight() {
         return height;
     }
 
-    public void printToCSVFile(CSVPrinter printer) throws IOException{
+    public void printToCSVFile(CSVPrinter printer) throws IOException {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 printer.printRecord(cells[i][j].toCSVRecord());

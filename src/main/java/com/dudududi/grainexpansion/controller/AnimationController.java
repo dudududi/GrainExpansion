@@ -1,8 +1,6 @@
 package com.dudududi.grainexpansion.controller;
 
 import com.dudududi.grainexpansion.model.CellAutomaton;
-import com.dudududi.grainexpansion.model.definables.neighbourhood.MooreNeighbourhood;
-import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
 import com.dudududi.grainexpansion.model.rules.BasicRule;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.animation.KeyFrame;
@@ -22,7 +20,6 @@ public class AnimationController implements Controller {
     private Button clearButton;
 
     private CellAutomaton cellAutomaton;
-    private Rule automatonRule;
 
     public AnimationController(CellAutomaton cellAutomaton) {
         this.cellAutomaton = cellAutomaton;
@@ -30,9 +27,8 @@ public class AnimationController implements Controller {
 
     @FXML
     private void initialize() {
-        NeighbourhoodType neighbourhoodType = new MooreNeighbourhood(cellAutomaton.getBoard());
-        automatonRule = new BasicRule(neighbourhoodType);
-        Timeline animation = new Timeline(new KeyFrame(Duration.millis(90), event -> cellAutomaton.next(automatonRule)));
+        Rule automatonRule = new BasicRule();
+        Timeline animation = new Timeline(new KeyFrame(Duration.millis(100), event -> cellAutomaton.next(automatonRule)));
         animation.setCycleCount(Timeline.INDEFINITE);
         startButton.setToggleGroup(new ToggleGroup());
         startButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -51,8 +47,6 @@ public class AnimationController implements Controller {
     @Override
     public void reload(CellAutomaton cellAutomaton) {
         this.cellAutomaton = cellAutomaton;
-        NeighbourhoodType neighbourhoodType = new MooreNeighbourhood(cellAutomaton.getBoard());
-        automatonRule = new BasicRule(neighbourhoodType);
     }
 
 }

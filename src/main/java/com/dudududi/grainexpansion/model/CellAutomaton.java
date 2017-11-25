@@ -4,6 +4,7 @@ import com.dudududi.grainexpansion.model.cells.Board;
 import com.dudududi.grainexpansion.model.cells.Cell;
 import com.dudududi.grainexpansion.model.definables.Definable;
 import com.dudududi.grainexpansion.model.definables.neighbourhood.MooreNeighbourhood;
+import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.scene.paint.Color;
 import org.apache.commons.csv.CSVFormat;
@@ -25,10 +26,13 @@ import java.util.stream.IntStream;
 public class CellAutomaton {
     private Board board;
     private List<Observer> observers;
+    private NeighbourhoodType neighbourhoodType;
 
     public CellAutomaton(Board board) {
         this.board = board;
-        observers = new ArrayList<>();
+        this.observers = new ArrayList<>();
+        this.neighbourhoodType = new MooreNeighbourhood(board);
+
     }
 
     public void next(Rule rule) {
@@ -38,7 +42,7 @@ public class CellAutomaton {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Cell cell = board.getCell(new CoordinatePair(i, j));
-                nextStep[i][j] = rule.determineState(cell);
+                nextStep[i][j] = rule.determineState(cell, neighbourhoodType);
             }
         }
         for (int i = 0; i < width; i++) {
@@ -93,6 +97,7 @@ public class CellAutomaton {
 
     public void reinitializeWithBoard(Board board) {
         this.board = board;
+        neighbourhoodType = new MooreNeighbourhood(board);
         notifyObserversBoardChanged();
     }
 
@@ -108,8 +113,7 @@ public class CellAutomaton {
     }
 
     private boolean isCellOnBoundary(Cell cell) {
-        MooreNeighbourhood neighbourhood = new MooreNeighbourhood(board);
-        return neighbourhood.getNeighbourhood(cell)
+        return neighbourhoodType.getNeighbourhood(cell)
                 .stream()
                 .anyMatch(c -> !(c.getState().equals(cell.getState()) && cell.isAlive()));
     }

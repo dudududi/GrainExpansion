@@ -15,14 +15,8 @@ import java.util.stream.Collectors;
  */
 public class BasicRule implements Rule {
 
-    private NeighbourhoodType neighbourhoodType;
-
-    public BasicRule(NeighbourhoodType neighbourhoodType) {
-        this.neighbourhoodType = neighbourhoodType;
-    }
-
     @Override
-    public Cell.State determineState(Cell cell) {
+    public Cell.State determineState(Cell cell, NeighbourhoodType neighbourhoodType) {
         if (cell.isAlive() || cell.isInclusion()) return null;
 
         Optional<Cell.State> mostOccurredState = neighbourhoodType.getNeighbourhood(cell)

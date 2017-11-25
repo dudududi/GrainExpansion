@@ -2,6 +2,7 @@ package com.dudududi.grainexpansion.model;
 
 import com.dudududi.grainexpansion.model.cells.Board;
 import com.dudududi.grainexpansion.model.cells.Cell;
+import com.dudududi.grainexpansion.model.cells.GrainsWarehouse;
 import com.dudududi.grainexpansion.model.definables.Definable;
 import com.dudududi.grainexpansion.model.definables.neighbourhood.MooreNeighbourhood;
 import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
@@ -18,7 +19,6 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by dudek on 4/21/16.
@@ -27,12 +27,13 @@ public class CellAutomaton {
     private Board board;
     private List<Observer> observers;
     private NeighbourhoodType neighbourhoodType;
+    private GrainsWarehouse grainsWarehouse;
 
     public CellAutomaton(Board board) {
         this.board = board;
         this.observers = new ArrayList<>();
         this.neighbourhoodType = new MooreNeighbourhood(board);
-
+        this.grainsWarehouse = new GrainsWarehouse(board, neighbourhoodType);
     }
 
     public void next(Rule rule) {
@@ -48,7 +49,9 @@ public class CellAutomaton {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (nextStep[i][j] != null) {
-                    board.getCell(new CoordinatePair(i, j)).setState(nextStep[i][j]);
+                    Cell cell = board.getCell(new CoordinatePair(i, j));
+                    cell.setState(nextStep[i][j]);
+                    grainsWarehouse.assign(cell);
                 }
             }
         }
@@ -87,7 +90,7 @@ public class CellAutomaton {
 
     public void addInclusions(int amount, Definable shape) {
         Random random = new Random();
-        List<Cell> boundaryCells = findBoundaryCells();
+        List<Cell> boundaryCells = grainsWarehouse.findBoundary();
         for (int i = 0; i < amount; i++) {
             int positionIndex = random.nextInt(boundaryCells.size());
             CoordinatePair position = boundaryCells.get(positionIndex).getPosition();
@@ -97,7 +100,8 @@ public class CellAutomaton {
 
     public void reinitializeWithBoard(Board board) {
         this.board = board;
-        neighbourhoodType = new MooreNeighbourhood(board);
+        this.neighbourhoodType = new MooreNeighbourhood(board);
+        this.grainsWarehouse = new GrainsWarehouse(board, neighbourhoodType);
         notifyObserversBoardChanged();
     }
 
@@ -105,20 +109,13 @@ public class CellAutomaton {
         observers.add(observer);
     }
 
-    private List<Cell> findBoundaryCells() {
-        return board.getCells()
-                .stream()
-                .filter(this::isCellOnBoundary)
-                .collect(Collectors.toList());
+    public GrainsWarehouse getGrainsWarehouse() {
+        return grainsWarehouse;
     }
 
-    private boolean isCellOnBoundary(Cell cell) {
-        return neighbourhoodType.getNeighbourhood(cell)
-                .stream()
-                .anyMatch(c -> !(c.getState().equals(cell.getState()) && cell.isAlive()));
-    }
 
     private void notifyObserversBoardChanged() {
         observers.forEach(Observer::onBoardChanged);
     }
+
 }

@@ -17,11 +17,11 @@ public class BasicRule implements Rule {
 
     @Override
     public Cell.State determineState(Cell cell, NeighbourhoodType neighbourhoodType) {
-        if (cell.isAlive() || cell.isInclusion()) return null;
+        if (cell.isAlive() || cell.isExcluded()) return null;
 
         Optional<Cell.State> mostOccurredState = neighbourhoodType.getNeighbourhood(cell)
                 .stream()
-                .filter(c -> c.isAlive() && !c.isInclusion())
+                .filter(Cell::isAlive)
                 .collect(Collectors.groupingBy(Cell::getState, Collectors.counting()))
                 .entrySet()
                 .stream()
@@ -29,7 +29,7 @@ public class BasicRule implements Rule {
                 .map(Map.Entry::getKey);
 
         if (mostOccurredState.isPresent()) {
-            return Cell.State.copyState(mostOccurredState.get());
+            return mostOccurredState.get();
         }
         return null;
     }

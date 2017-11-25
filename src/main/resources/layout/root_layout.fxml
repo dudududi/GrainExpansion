@@ -14,16 +14,18 @@
     </MenuBar>
     <SplitPane dividerPositions="0.25" prefHeight="600.0" prefWidth="800.0">
         <VBox prefHeight="598.0" prefWidth="334.0">
-            <fx:include source="space_generator_layout.fxml"/>
+            <fx:include fx:id="spaceGenerator" source="space_generator_layout.fxml"/>
             <Separator prefWidth="200.0"/>
-            <fx:include source="nucleons_layout.fxml"/>
+            <fx:include fx:id="nucleons" source="nucleons_layout.fxml"/>
             <Separator prefWidth="200.0"/>
-            <fx:include source="inclusions_layout.fxml"/>
+            <fx:include fx:id="inclusions" source="inclusions_layout.fxml"/>
             <Separator prefWidth="200.0"/>
-            <fx:include source="animation_layout.fxml"/>
+            <fx:include fx:id="structures" source="structures_layout.fxml"/>
+            <Separator prefWidth="200.0"/>
+            <fx:include fx:id="animation" source="animation_layout.fxml"/>
         </VBox>
         <VBox alignment="CENTER">
-            <fx:include layoutX="53.0" layoutY="99.0" pickOnBounds="true" source="board_layout.fxml"/>
+            <fx:include fx:id="board" layoutX="53.0" layoutY="99.0" pickOnBounds="true" source="board_layout.fxml"/>
             <padding>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
             </padding>

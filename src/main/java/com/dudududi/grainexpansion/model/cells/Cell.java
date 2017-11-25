@@ -18,10 +18,10 @@ public class Cell {
     private CoordinatePair position;
     private State state;
 
-    public Cell(CoordinatePair position) {
+    Cell(CoordinatePair position) {
         this.position = position;
         this.colorProperty = new SimpleObjectProperty<>(Color.WHITE);
-        setState(new State(Phase.DEAD, Color.WHITE));
+        setState(State.DEAD_STATE);
     }
 
     public ObjectProperty<Color> colorProperty() {
@@ -37,8 +37,8 @@ public class Cell {
         colorProperty.setValue(state.color);
     }
 
-    public void reset() {
-        setState(new State(Phase.DEAD, Color.WHITE));
+    void reset() {
+        setState(State.DEAD_STATE);
     }
 
 
@@ -46,15 +46,21 @@ public class Cell {
         return state.phase == Phase.ALIVE;
     }
 
-    public boolean isInclusion() {
-        return state.phase == Phase.INCLUSION;
+    public boolean isDead() {
+        return state.phase == Phase.DEAD;
+    }
+
+    public boolean isExcluded() {
+        return state.phase == Phase.INCLUSION ||
+                state.phase == Phase.SUB_STRUCTURE ||
+                state.phase == Phase.BOUNDARY;
     }
 
     public State getState() {
         return state;
     }
 
-    public Iterable<String> toCSVRecord() {
+    Iterable<String> toCSVRecord() {
         return Arrays.asList(
                 String.valueOf(position.x),     // x
                 String.valueOf(position.y),     // y
@@ -63,7 +69,7 @@ public class Cell {
         );
     }
 
-    public static Cell fromCSVRecord(CSVRecord record) {
+    static Cell fromCSVRecord(CSVRecord record) {
         CoordinatePair position = new CoordinatePair(Integer.parseInt(record.get("x")), Integer.parseInt(record.get("y")));
         Cell cell = new Cell(position);
         Color color = Color.valueOf(record.get("color"));
@@ -75,7 +81,9 @@ public class Cell {
     public enum Phase {
         DEAD(0),
         ALIVE(1),
-        INCLUSION(2);
+        INCLUSION(2),
+        SUB_STRUCTURE(3),
+        BOUNDARY(4);
 
         private final int id;
 
@@ -99,13 +107,11 @@ public class Cell {
         private final Phase phase;
         private final Color color;
 
+        static final State DEAD_STATE = new State(Phase.DEAD, Color.WHITE);
+
         public State(Phase phase, Color color) {
             this.phase = phase;
             this.color = color;
-        }
-
-        public static State copyState(State state) {
-            return new State(state.phase, state.color);
         }
 
         @Override
@@ -119,7 +125,9 @@ public class Cell {
 
         @Override
         public int hashCode() {
-            return Objects.hash(color, phase.id);
+            // as we want to hold each instance in GrainsWarehouse' HashMap separately,
+            // we are adding super.hashCode() to the result
+            return super.hashCode() + Objects.hash(color, phase.id);
         }
     }
 }

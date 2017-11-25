@@ -40,20 +40,23 @@ public class RootController {
     private MenuItem exportButton;
 
     // Controllers list
-    @FXML
+    @FXML @SuppressWarnings("UnusedDeclaration")
     private AnimationController animationController;
 
-    @FXML
+    @FXML @SuppressWarnings("UnusedDeclaration")
     private BoardController boardController;
 
-    @FXML
+    @FXML @SuppressWarnings("UnusedDeclaration")
     private InclusionsController inclusionsController;
 
-    @FXML
+    @FXML @SuppressWarnings("UnusedDeclaration")
     private NucleonsController nucleonsController;
 
-    @FXML
+    @FXML @SuppressWarnings("UnusedDeclaration")
     private SpaceGeneratorController spaceGeneratorController;
+
+    @FXML @SuppressWarnings("UnusedDeclaration")
+    private StructuresController structuresController;
 
     private CellAutomaton cellAutomaton;
     private List<Controller> controllerList;
@@ -79,7 +82,10 @@ public class RootController {
                 boardController,
                 inclusionsController,
                 nucleonsController,
-                spaceGeneratorController));
+                spaceGeneratorController,
+                structuresController));
+
+        boardController.setStructuresController(structuresController);
     }
 
     public void setScene(Scene scene) {

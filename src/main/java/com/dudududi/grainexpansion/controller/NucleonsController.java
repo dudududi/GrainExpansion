@@ -40,6 +40,7 @@ public class NucleonsController implements Controller {
                 Cell cell = board.getCell(new CoordinatePair(x, y));
                 if (!cell.isAlive()) {
                     cell.setState(new Cell.State(Cell.Phase.ALIVE, getRandomColor()));
+                    cellAutomaton.getGrainsWarehouse().assign(cell);
                 }
             }
         });

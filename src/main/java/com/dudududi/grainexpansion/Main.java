@@ -58,6 +58,8 @@ public class Main extends Application {
             return rootController;
         } else if (param == SpaceGeneratorController.class) {
             return new SpaceGeneratorController(cellAutomaton);
+        } else if (param == StructuresController.class) {
+            return new StructuresController(cellAutomaton);
         } else {
             // unsupported controller
             throw new UnsupportedOperationException("Cannot instantiate " + param.getCanonicalName());

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      prefHeight="598.0" prefWidth="334.0" fx:controller="com.dudududi.grainexpansion.controller.CellularAutomatonController">
+    <fx:include fx:id="spaceGenerator" source="space_generator_layout.fxml"/>
+    <Separator prefWidth="200.0"/>
+    <fx:include fx:id="nucleons" source="nucleons_layout.fxml"/>
+    <Separator prefWidth="200.0"/>
+    <fx:include fx:id="inclusions" source="inclusions_layout.fxml"/>
+    <Separator prefWidth="200.0"/>
+    <fx:include fx:id="structures" source="structures_layout.fxml"/>
+    <Separator prefWidth="200.0"/>
+    <fx:include fx:id="animation" source="animation_layout.fxml"/>
+</VBox>

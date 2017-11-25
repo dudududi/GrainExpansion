@@ -12,18 +12,13 @@
             <MenuItem fx:id="exportButton" mnemonicParsing="false" text="Export"/>
         </Menu>
     </MenuBar>
-    <SplitPane dividerPositions="0.25" prefHeight="600.0" prefWidth="800.0">
-        <VBox prefHeight="598.0" prefWidth="334.0">
-            <fx:include fx:id="spaceGenerator" source="space_generator_layout.fxml"/>
-            <Separator prefWidth="200.0"/>
-            <fx:include fx:id="nucleons" source="nucleons_layout.fxml"/>
-            <Separator prefWidth="200.0"/>
-            <fx:include fx:id="inclusions" source="inclusions_layout.fxml"/>
-            <Separator prefWidth="200.0"/>
-            <fx:include fx:id="structures" source="structures_layout.fxml"/>
-            <Separator prefWidth="200.0"/>
-            <fx:include fx:id="animation" source="animation_layout.fxml"/>
-        </VBox>
+    <SplitPane dividerPositions="0.25" prefHeight="620.0" prefWidth="800.0">
+        <TabPane minWidth="300.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
+            <Tab text="Cellular Automaton">
+                <fx:include fx:id="cellularAutomaton" source="cellular_automaton_layout.fxml"/>
+            </Tab>
+            <Tab text="Monte Carlo"/>
+        </TabPane>
         <VBox alignment="CENTER">
             <fx:include fx:id="board" layoutX="53.0" layoutY="99.0" pickOnBounds="true" source="board_layout.fxml"/>
             <padding>

@@ -39,32 +39,17 @@ public class RootController {
     @FXML
     private MenuItem exportButton;
 
-    // Controllers list
-    @FXML @SuppressWarnings("UnusedDeclaration")
-    private AnimationController animationController;
-
     @FXML @SuppressWarnings("UnusedDeclaration")
     private BoardController boardController;
 
     @FXML @SuppressWarnings("UnusedDeclaration")
-    private InclusionsController inclusionsController;
-
-    @FXML @SuppressWarnings("UnusedDeclaration")
-    private NucleonsController nucleonsController;
-
-    @FXML @SuppressWarnings("UnusedDeclaration")
-    private SpaceGeneratorController spaceGeneratorController;
-
-    @FXML @SuppressWarnings("UnusedDeclaration")
-    private StructuresController structuresController;
+    private CellularAutomatonController cellularAutomatonController;
 
     private CellAutomaton cellAutomaton;
-    private List<Controller> controllerList;
 
     public RootController(CellAutomaton cellAutomaton) {
         this.cellAutomaton = cellAutomaton;
         this.fileChooser = new FileChooser();
-        this.controllerList = new ArrayList<>();
 
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter(CSV_FORMAT_DESCRIPTION, CSV_FORMAT_EXTENSION),
@@ -77,16 +62,7 @@ public class RootController {
         importButton.setOnAction(this::importButtonClicked);
         exportButton.setOnAction(this::exportButtonClicked);
 
-        controllerList.addAll(Arrays.asList(
-                animationController,
-                boardController,
-                inclusionsController,
-                nucleonsController,
-                spaceGeneratorController,
-                structuresController));
-
-        boardController.setStructuresController(structuresController);
-        animationController.setStructuresController(structuresController);
+        cellularAutomatonController.setBoardController(boardController);
     }
 
     public void setScene(Scene scene) {
@@ -123,7 +99,7 @@ public class RootController {
             switch (selectedExtension.getDescription()) {
                 case CSV_FORMAT_DESCRIPTION:
                     cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
-                    reloadAllControllers();
+                    cellularAutomatonController.reload(cellAutomaton);
                     break;
                 case PNG_FORMAT_DESCRIPTION:
                     Image importedImg = new Image(file.toURI().toString());
@@ -137,7 +113,4 @@ public class RootController {
         }
     }
 
-    private void reloadAllControllers() {
-        controllerList.forEach(controller -> controller.reload(cellAutomaton));
-    }
 }

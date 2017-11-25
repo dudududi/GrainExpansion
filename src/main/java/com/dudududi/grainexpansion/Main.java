@@ -13,7 +13,8 @@ import javafx.util.Callback;
 import java.io.IOException;
 
 public class Main extends Application {
-
+    private static final int WIDTH = 900;
+    private static final int HEIGHT = 650;
     private Stage primaryStage;
     private CellAutomaton cellAutomaton;
     private RootController rootController;
@@ -39,7 +40,7 @@ public class Main extends Application {
 
         loader.setLocation(Main.class.getClassLoader().getResource("layout/root_layout.fxml"));
         Parent root = loader.load();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, WIDTH, HEIGHT);
         this.primaryStage.setScene(scene);
         this.rootController.setScene(scene);
         this.primaryStage.show();
@@ -50,6 +51,8 @@ public class Main extends Application {
             return new AnimationController(cellAutomaton);
         } else if (param == BoardController.class) {
             return new BoardController(cellAutomaton);
+        } else if (param == CellularAutomatonController.class) {
+            return new CellularAutomatonController(cellAutomaton);
         } else if (param == InclusionsController.class) {
             return new InclusionsController(cellAutomaton);
         } else if (param == NucleonsController.class) {

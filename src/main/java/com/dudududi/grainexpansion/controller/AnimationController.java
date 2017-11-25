@@ -20,6 +20,7 @@ public class AnimationController implements Controller {
     private Button clearButton;
 
     private CellAutomaton cellAutomaton;
+    private StructuresController structuresController;
 
     public AnimationController(CellAutomaton cellAutomaton) {
         this.cellAutomaton = cellAutomaton;
@@ -41,7 +42,11 @@ public class AnimationController implements Controller {
             }
         });
 
-        clearButton.setOnMouseClicked(event -> cellAutomaton.clear());
+        clearButton.setOnMouseClicked(event -> cellAutomaton.clear(structuresController.shouldClearAll()));
+    }
+
+    void setStructuresController(StructuresController structuresController) {
+        this.structuresController = structuresController;
     }
 
     @Override

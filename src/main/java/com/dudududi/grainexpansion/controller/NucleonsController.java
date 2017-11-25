@@ -38,7 +38,7 @@ public class NucleonsController implements Controller {
                 int x = random.nextInt(board.getWidth());
                 int y = random.nextInt(board.getHeight());
                 Cell cell = board.getCell(new CoordinatePair(x, y));
-                if (!cell.isAlive()) {
+                if (cell.isDead()) {
                     cell.setState(new Cell.State(Cell.Phase.ALIVE, getRandomColor()));
                     cellAutomaton.getGrainsWarehouse().assign(cell);
                 }

@@ -79,6 +79,10 @@ public class StructuresController implements Controller{
         }
     }
 
+    boolean shouldClearAll() {
+        return selectStructureType.getSelectionModel().getSelectedItem().equals(StructureType.NONE);
+    }
+
     private enum StructureType {
         NONE("None"),
         DUAL_PHASE ("Dual phase"),

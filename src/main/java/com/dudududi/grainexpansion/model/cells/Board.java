@@ -37,8 +37,12 @@ public class Board {
         cellsList = Arrays.stream(cells).flatMap(Arrays::stream).collect(Collectors.toList());
     }
 
-    public void resetAll() {
-        cellsList.forEach(Cell::reset);
+    public void resetAll(boolean resetAll) {
+        cellsList.forEach( cell -> {
+            if (resetAll || cell.isAlive()) {
+                cell.reset();
+            }
+        });
     }
 
     public Cell getCell(CoordinatePair position) {

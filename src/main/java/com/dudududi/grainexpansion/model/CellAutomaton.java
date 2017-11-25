@@ -61,8 +61,8 @@ public class CellAutomaton {
         return board;
     }
 
-    public void clear() {
-        board.resetAll();
+    public void clear(boolean clearAll) {
+        board.resetAll(clearAll);
     }
 
     public void printToCSVFile(Appendable out) {

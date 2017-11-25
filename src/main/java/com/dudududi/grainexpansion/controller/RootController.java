@@ -86,6 +86,7 @@ public class RootController {
                 structuresController));
 
         boardController.setStructuresController(structuresController);
+        animationController.setStructuresController(structuresController);
     }
 
     public void setScene(Scene scene) {

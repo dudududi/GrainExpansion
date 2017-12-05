@@ -1,6 +1,6 @@
 package com.dudududi.grainexpansion.model.definables;
 
-import com.dudududi.grainexpansion.model.CoordinatePair;
+import com.dudududi.grainexpansion.model.cells.CoordinatePair;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package com.dudududi.grainexpansion.model.cells;
 
-import com.dudududi.grainexpansion.model.CoordinatePair;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
@@ -104,6 +103,7 @@ public class Cell {
     }
 
     public static class State {
+        private static final Random random = new Random();
         private final Phase phase;
         private final Color color;
 
@@ -112,6 +112,11 @@ public class Cell {
         public State(Phase phase, Color color) {
             this.phase = phase;
             this.color = color;
+        }
+
+        public static State createAliveState() {
+            Color randomColor = new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
+            return new State(Phase.ALIVE, randomColor);
         }
 
         @Override

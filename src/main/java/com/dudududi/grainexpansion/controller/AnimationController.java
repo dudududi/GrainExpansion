@@ -1,8 +1,6 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.model.CellAutomaton;
-import com.dudududi.grainexpansion.model.rules.BasicRule;
-import com.dudududi.grainexpansion.model.rules.Rule;
+import com.dudududi.grainexpansion.model.SimulationModel;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -11,7 +9,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.util.Duration;
 
-public class AnimationController implements Controller {
+public class AnimationController extends Controller {
 
     @FXML
     private ToggleButton startButton;
@@ -19,17 +17,15 @@ public class AnimationController implements Controller {
     @FXML
     private Button clearButton;
 
-    private CellAutomaton cellAutomaton;
-    private StructuresController structuresController;
-
-    public AnimationController(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
+    public AnimationController(SimulationModel simulationModel) {
+        super(simulationModel);
     }
 
     @FXML
     private void initialize() {
-        Rule automatonRule = new BasicRule();
-        Timeline animation = new Timeline(new KeyFrame(Duration.millis(100), event -> cellAutomaton.next(automatonRule)));
+        Timeline animation = new Timeline(new KeyFrame(Duration.millis(200), event ->
+            simulationModel.next(simulationMode)
+        ));
         animation.setCycleCount(Timeline.INDEFINITE);
         startButton.setToggleGroup(new ToggleGroup());
         startButton.getToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -42,16 +38,6 @@ public class AnimationController implements Controller {
             }
         });
 
-        clearButton.setOnMouseClicked(event -> cellAutomaton.clear(structuresController.shouldClearAll()));
+        clearButton.setOnMouseClicked(event -> simulationModel.clear(false));
     }
-
-    void setStructuresController(StructuresController structuresController) {
-        this.structuresController = structuresController;
-    }
-
-    @Override
-    public void reload(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
-    }
-
 }

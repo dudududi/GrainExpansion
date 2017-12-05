@@ -1,6 +1,6 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.model.CellAutomaton;
+import com.dudududi.grainexpansion.model.SimulationModel;
 import com.dudududi.grainexpansion.model.definables.shapes.CircularShape;
 import com.dudududi.grainexpansion.model.definables.shapes.Shape;
 import com.dudududi.grainexpansion.model.definables.shapes.SquareShape;
@@ -9,7 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
-public class InclusionsController implements Controller {
+public class InclusionsController extends Controller {
     private static final int DEFAULT_INCLUSIONS_AMOUNT = 8;
     private static final int DEFAULT_INCLUSIONS_SIZE = 8;
 
@@ -25,10 +25,8 @@ public class InclusionsController implements Controller {
     @FXML
     private Button addInclusionsButton;
 
-    private CellAutomaton cellAutomaton;
-
-    public InclusionsController(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
+    public InclusionsController(SimulationModel simulationModel) {
+        super(simulationModel);
     }
 
     @FXML
@@ -44,12 +42,7 @@ public class InclusionsController implements Controller {
             int size = Integer.valueOf(inclusionsSizeField.getText());
             Shape shape = selectInclusionsType.getSelectionModel().getSelectedItem();
             shape.setSize(size);
-            cellAutomaton.addInclusions(inclusionsAmount, shape);
+            simulationModel.addInclusions(inclusionsAmount, shape);
         });
-    }
-
-    @Override
-    public void reload(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
     }
 }

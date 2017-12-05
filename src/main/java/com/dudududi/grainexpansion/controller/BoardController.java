@@ -1,7 +1,7 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.model.CellAutomaton;
-import com.dudududi.grainexpansion.model.CoordinatePair;
+import com.dudududi.grainexpansion.model.SimulationModel;
+import com.dudududi.grainexpansion.model.cells.CoordinatePair;
 import com.dudududi.grainexpansion.model.cells.Board;
 import com.dudududi.grainexpansion.model.cells.Cell;
 import javafx.embed.swing.SwingFXUtils;
@@ -9,37 +9,28 @@ import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
 
 import java.awt.image.RenderedImage;
-import java.util.Random;
 
 /**
  * Created by dudek on 10/22/17.
  */
-public class BoardController implements Controller {
+public class BoardController extends Controller {
 
     @FXML
     private ImageView boardView;
 
-    private CellAutomaton cellAutomaton;
-    private Random random;
-    private StructuresController structuresController;
-
-    public BoardController(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
-        this.random = new Random();
+    public BoardController(SimulationModel simulationModel) {
+        super(simulationModel);
     }
 
     @FXML
     private void initialize() {
         bindAutomatonWithBoard();
-        cellAutomaton.attach(this::bindAutomatonWithBoard);
     }
 
     @Override
-    public void reload(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
+    public void onBoardChanged() {
         initialize();
     }
 
@@ -51,12 +42,8 @@ public class BoardController implements Controller {
         boardView.setImage(image);
     }
 
-    void setStructuresController(StructuresController structuresController) {
-        this.structuresController = structuresController;
-    }
-
     private void bindAutomatonWithBoard() {
-        Board board = cellAutomaton.getBoard();
+        Board board = simulationModel.getBoard();
         WritableImage image = new WritableImage(board.getWidth(), board.getHeight());
         board.getCells()
                 .forEach(c -> {
@@ -73,17 +60,7 @@ public class BoardController implements Controller {
             int x = (int) event.getX();
             int y = (int) event.getY();
             Cell cell = board.getCell(new CoordinatePair(x, y));
-            if (cell.isDead()) {
-                cell.setState(new Cell.State(Cell.Phase.ALIVE, getRandomColor()));
-                cellAutomaton.getGrainsWarehouse().assign(cell);
-            }
-            else {
-                structuresController.onAliveCellClicked(cell);
-            }
+            simulationModel.handleCellClick(cell);
         });
-    }
-
-    private Color getRandomColor() {
-        return new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
     }
 }

@@ -1,6 +1,6 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.model.CellAutomaton;
+import com.dudududi.grainexpansion.model.SimulationModel;
 import com.dudududi.grainexpansion.model.cells.Cell;
 import com.dudududi.grainexpansion.model.cells.GrainsWarehouse;
 import javafx.fxml.FXML;
@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
-public class StructuresController implements Controller{
+public class StructuresController extends Controller{
     private static final String DEFAULT_BOUNDARIES_SIZE = "5";
 
     @FXML
@@ -25,11 +25,8 @@ public class StructuresController implements Controller{
     @FXML
     private Button colorAllBoundariesButton;
 
-
-    private CellAutomaton cellAutomaton;
-
-    public StructuresController(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
+    public StructuresController(SimulationModel simulationModel) {
+        super(simulationModel);
     }
 
     @FXML
@@ -49,21 +46,17 @@ public class StructuresController implements Controller{
 
         colorAllBoundariesButton.setOnMouseClicked(event -> {
             int size = Integer.valueOf(boundariesSizeField.getText());
-            cellAutomaton.getGrainsWarehouse().changeAllBoundariesState(size);
+            simulationModel.getGrainsWarehouse().changeAllBoundariesState(size);
         });
     }
 
     @Override
-    public void reload(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
-    }
-
-    void onAliveCellClicked(Cell cell) {
+    public void onAliveCellClicked(Cell cell) {
         if (cell.isExcluded()) {
             return;
         }
         StructureType type = selectStructureType.getSelectionModel().getSelectedItem();
-        GrainsWarehouse grainsWarehouse = cellAutomaton.getGrainsWarehouse();
+        GrainsWarehouse grainsWarehouse = simulationModel.getGrainsWarehouse();
         switch (type) {
             case DUAL_PHASE:
                 grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, Color.MAGENTA));

@@ -1,7 +1,6 @@
 package com.dudududi.grainexpansion.model.cells;
 
 
-import com.dudududi.grainexpansion.model.CoordinatePair;
 import com.dudududi.grainexpansion.model.definables.neighbourhood.NeighbourhoodType;
 import javafx.scene.paint.Color;
 

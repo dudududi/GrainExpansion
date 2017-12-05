@@ -1,10 +1,9 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.model.CellAutomaton;
+import com.dudududi.grainexpansion.model.SimulationModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -14,9 +13,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,16 +35,14 @@ public class RootController {
     @FXML
     private MenuItem exportButton;
 
-    @FXML @SuppressWarnings("UnusedDeclaration")
+    @FXML
     private BoardController boardController;
 
-    @FXML @SuppressWarnings("UnusedDeclaration")
-    private CellularAutomatonController cellularAutomatonController;
 
-    private CellAutomaton cellAutomaton;
+    private SimulationModel simulationModel;
 
-    public RootController(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
+    public RootController(SimulationModel simulationModel) {
+        this.simulationModel = simulationModel;
         this.fileChooser = new FileChooser();
 
         fileChooser.getExtensionFilters().addAll(
@@ -61,8 +55,6 @@ public class RootController {
     private void initialize() {
         importButton.setOnAction(this::importButtonClicked);
         exportButton.setOnAction(this::exportButtonClicked);
-
-        cellularAutomatonController.setBoardController(boardController);
     }
 
     public void setScene(Scene scene) {
@@ -77,7 +69,7 @@ public class RootController {
         try (FileWriter fileWriter = new FileWriter(file)) {
             switch (selectedExtension.getDescription()) {
                 case CSV_FORMAT_DESCRIPTION:
-                    cellAutomaton.printToCSVFile(fileWriter);
+                    simulationModel.toCSV(fileWriter);
                     break;
                 case PNG_FORMAT_DESCRIPTION:
                     ImageIO.write(boardController.getRenderedImage(), DEFAULT_IMAGE_FORMAT, file);
@@ -98,8 +90,7 @@ public class RootController {
         try (FileReader fileReader = new FileReader(file)) {
             switch (selectedExtension.getDescription()) {
                 case CSV_FORMAT_DESCRIPTION:
-                    cellAutomaton = CellAutomaton.fromCSVFile(fileReader);
-                    cellularAutomatonController.reload(cellAutomaton);
+                    simulationModel.reinitializeWihCSV(fileReader);
                     break;
                 case PNG_FORMAT_DESCRIPTION:
                     Image importedImg = new Image(file.toURI().toString());

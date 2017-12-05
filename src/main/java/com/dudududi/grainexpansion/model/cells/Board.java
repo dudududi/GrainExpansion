@@ -1,7 +1,7 @@
 package com.dudududi.grainexpansion.model.cells;
 
-import com.dudududi.grainexpansion.model.CoordinatePair;
 import com.dudududi.grainexpansion.model.definables.Definable;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by dudek on 10/22/17.
@@ -70,7 +69,11 @@ public class Board {
     }
 
 
-    public static Board restoreFromCSVRecords(List<CSVRecord> records, int width, int height) {
+    public static Board restoreFromCSVRecords(CSVParser parser) throws IOException {
+        List<CSVRecord> records = parser.getRecords();
+        CSVRecord sizeRecord = records.remove(0);
+        int width = Integer.parseInt(sizeRecord.get(0));
+        int height = Integer.parseInt(sizeRecord.get(1));
         Board board = new Board(width, height, true);
         for (CSVRecord record : records) {
             Cell cell = Cell.fromCSVRecord(record);

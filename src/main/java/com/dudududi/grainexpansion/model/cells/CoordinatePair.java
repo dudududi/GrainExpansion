@@ -1,4 +1,4 @@
-package com.dudududi.grainexpansion.model;
+package com.dudududi.grainexpansion.model.cells;
 
 import java.util.Objects;
 

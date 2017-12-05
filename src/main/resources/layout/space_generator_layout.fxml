@@ -16,7 +16,7 @@
         <TextField fx:id="boardHeight" prefHeight="30.0" prefWidth="150.0"/>
     </HBox>
     <CheckBox fx:id="periodicBC" mnemonicParsing="false" text="Periodic boundary condition"/>
-    <Button fx:id="generateButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0" text="Generate mesh"/>
+    <Button fx:id="generateButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0" text="Generate space"/>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
     </padding>

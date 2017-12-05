@@ -1,13 +1,13 @@
 package com.dudududi.grainexpansion.controller;
 
-import com.dudududi.grainexpansion.model.CellAutomaton;
+import com.dudududi.grainexpansion.model.SimulationModel;
 import javafx.fxml.FXML;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CellularAutomatonController implements Controller{
+public class CellularAutomatonController extends Controller{
 
     // Controllers list
     @FXML
@@ -26,17 +26,12 @@ public class CellularAutomatonController implements Controller{
     @FXML @SuppressWarnings("UnusedDeclaration")
     private StructuresController structuresController;
 
-    private CellAutomaton cellAutomaton;
     private List<Controller> controllerList;
 
 
-    public CellularAutomatonController(CellAutomaton cellAutomaton) {
-        this.cellAutomaton = cellAutomaton;
+    public CellularAutomatonController(SimulationModel simulationModel) {
+        super(simulationModel);
         this.controllerList = new ArrayList<>();
-    }
-
-    void setBoardController(BoardController boardController) {
-        boardController.setStructuresController(structuresController);
     }
 
     @FXML
@@ -48,18 +43,7 @@ public class CellularAutomatonController implements Controller{
                 spaceGeneratorController,
                 structuresController));
 
-        animationController.setStructuresController(structuresController);
-    }
-
-    @Override
-    public void reload(CellAutomaton cellAutomaton) {
-            this.cellAutomaton = cellAutomaton;
-            reloadAllControllers();
-    }
-
-
-    private void reloadAllControllers() {
-        controllerList.forEach(controller -> controller.reload(cellAutomaton));
+        controllerList.forEach(controller -> controller.setSimulationMode(SimulationModel.Mode.CELLULAR_AUTOMATON));
     }
 
 }

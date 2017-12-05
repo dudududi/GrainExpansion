@@ -13,11 +13,13 @@
         </Menu>
     </MenuBar>
     <SplitPane dividerPositions="0.25" prefHeight="620.0" prefWidth="800.0">
-        <TabPane minWidth="300.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE">
+        <TabPane minWidth="300.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE" fx:id="simulationTabPane">
             <Tab text="Cellular Automaton">
                 <fx:include fx:id="cellularAutomaton" source="cellular_automaton_layout.fxml"/>
             </Tab>
-            <Tab text="Monte Carlo"/>
+            <Tab text="Monte Carlo">
+                <fx:include fx:id="monteCarlo" source="monte_carlo_layout.fxml"/>
+            </Tab>
         </TabPane>
         <VBox alignment="CENTER">
             <fx:include fx:id="board" layoutX="53.0" layoutY="99.0" pickOnBounds="true" source="board_layout.fxml"/>

@@ -6,12 +6,12 @@
 
 <VBox alignment="CENTER" minWidth="300.0" prefHeight="23.0" prefWidth="300.0" spacing="10.0"
       xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.dudududi.grainexpansion.controller.NucleonsController">
+      fx:controller="com.dudududi.grainexpansion.controller.StatesController">
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-        <Label text="Nucleons amount:"/>
-        <TextField fx:id="nucleonsAmountField" prefHeight="30.0" prefWidth="130.0"/>
+        <Label text="States amount:"/>
+        <TextField fx:id="statesAmountField" prefHeight="30.0" prefWidth="130.0"/>
     </HBox>
-    <Button fx:id="randomizeButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0" text="Randomize"/>
+    <Button fx:id="generateStatesButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0" text="Generate states"/>
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
     </padding>

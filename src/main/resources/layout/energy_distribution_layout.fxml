@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" minWidth="300.0" prefHeight="37.0" prefWidth="300.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dudududi.grainexpansion.controller.StructuresController">
-   <children>
-       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-          <children>
-              <Label text="Energy distribution:" />
-              <ComboBox fx:id="selectStructureType" minWidth="150.0" prefHeight="30.0" prefWidth="150.0" />
-          </children>
-       </HBox>
-       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-          <children>
-              <Label fx:id="boundariesSizeLabel" text="Energy value:" />
-              <TextField fx:id="boundariesSizeField" prefWidth="150.0" />
-          </children>
-       </HBox>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-         <children>
-            <Label fx:id="boundariesSizeLabel1" text="Energy value 2:" />
-            <TextField fx:id="boundariesSizeField1" prefWidth="150.0" />
-         </children>
-      </HBox>
-       <Button fx:id="colorAllBoundariesButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0" text="Color all boundaries" />
-   </children>
+<VBox alignment="CENTER" minWidth="300.0" prefHeight="0.0" prefWidth="300.0" spacing="10.0"
+      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.dudududi.grainexpansion.controller.EnergyDistributionController">
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+        <Label text="Energy distribution:"/>
+        <ComboBox fx:id="selectEnergyDistType" minWidth="150.0" prefHeight="30.0" prefWidth="150.0"/>
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="42.0">
+        <Label text="Energy value:"/>
+        <TextField fx:id="energyField" prefHeight="30.0" prefWidth="150.0"/>
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
+        <Label fx:id="boundaryEnergyLabel" text="Boundary energy value:"/>
+        <TextField fx:id="boundaryEnergyField" prefHeight="30.0" prefWidth="120.0"/>
+    </HBox>
+    <Button fx:id="distributeEnergyButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="250.0"
+            text="Distribute energy"/>
     <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
     </padding>
 </VBox>

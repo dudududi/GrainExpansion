@@ -11,5 +11,7 @@
     <Separator prefWidth="200.0"/>
     <fx:include fx:id="structures" source="structures_layout.fxml"/>
     <Separator prefWidth="200.0"/>
+    <fx:include fx:id="energyDistribution" source="energy_distribution_layout.fxml"/>
+    <Separator prefWidth="200.0"/>
     <fx:include fx:id="animation" source="animation_layout.fxml"/>
 </VBox>

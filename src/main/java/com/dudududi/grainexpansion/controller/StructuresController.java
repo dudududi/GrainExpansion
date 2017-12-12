@@ -48,6 +48,9 @@ public class StructuresController extends Controller{
             int size = Integer.valueOf(boundariesSizeField.getText());
             simulationModel.getGrainsWarehouse().changeAllBoundariesState(size);
         });
+        boundariesSizeLabel.managedProperty().bind(boundariesSizeLabel.visibleProperty());
+        boundariesSizeField.managedProperty().bind(boundariesSizeField.visibleProperty());
+        colorAllBoundariesButton.managedProperty().bind(colorAllBoundariesButton.visibleProperty());
     }
 
     @Override

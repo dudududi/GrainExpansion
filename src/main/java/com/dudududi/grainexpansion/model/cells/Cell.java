@@ -1,6 +1,8 @@
 package com.dudududi.grainexpansion.model.cells;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 import org.apache.commons.csv.CSVRecord;
@@ -12,19 +14,27 @@ import java.util.*;
  */
 public class Cell {
     public static final String[] CSV_HEADERS = new String[]{"x", "y", "color", "state"};
+    public static final int MIN_ENERGY = 0;
+    public static final int MAX_ENERGY = 100;
 
     private ObjectProperty<Color> colorProperty;
+    private IntegerProperty energyProperty;
     private CoordinatePair position;
     private State state;
 
     Cell(CoordinatePair position) {
         this.position = position;
         this.colorProperty = new SimpleObjectProperty<>(Color.WHITE);
+        this.energyProperty = new SimpleIntegerProperty(0);
         setState(State.DEAD_STATE);
     }
 
     public ObjectProperty<Color> colorProperty() {
         return colorProperty;
+    }
+
+    public IntegerProperty energyProperty() {
+        return energyProperty;
     }
 
     public CoordinatePair getPosition() {
@@ -40,6 +50,13 @@ public class Cell {
         setState(State.DEAD_STATE);
     }
 
+    public void setEnergy(int energy) {
+        energyProperty.setValue(energy);
+    }
+
+    public int getEnergy() {
+        return energyProperty.get();
+    }
 
     public boolean isAlive() {
         return state.phase == Phase.ALIVE;

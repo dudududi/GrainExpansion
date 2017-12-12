@@ -25,6 +25,8 @@ public class RootController {
     private static final String DEFAULT_IMAGE_FORMAT = "png";
     private static final String PNG_FORMAT_EXTENSION = "*." + DEFAULT_IMAGE_FORMAT;
     private static final String PNG_FORMAT_DESCRIPTION = "PNG file";
+    private static final String SHOW_ENERGY_TEXT = "Show energy";
+    private static final String HIDE_ENERGY_TEXT = "Hide energy";
 
     private FileChooser fileChooser;
     private Scene scene;
@@ -34,6 +36,9 @@ public class RootController {
 
     @FXML
     private MenuItem exportButton;
+
+    @FXML
+    private MenuItem showEnergyButton;
 
     @FXML
     private BoardController boardController;
@@ -55,6 +60,7 @@ public class RootController {
     private void initialize() {
         importButton.setOnAction(this::importButtonClicked);
         exportButton.setOnAction(this::exportButtonClicked);
+        showEnergyButton.setOnAction(this::showEnergyButtonClicked);
     }
 
     public void setScene(Scene scene) {
@@ -102,6 +108,12 @@ public class RootController {
         } catch (IOException e) {
             Logger.getGlobal().log(Level.ALL, "Unable to import file", e);
         }
+    }
+    @SuppressWarnings("unused")
+    private void showEnergyButtonClicked(ActionEvent event) {
+        String text = showEnergyButton.getText();
+        showEnergyButton.setText(text.equals(SHOW_ENERGY_TEXT) ? HIDE_ENERGY_TEXT : SHOW_ENERGY_TEXT);
+        boardController.setEnergyDistributionVisible(text.equals(SHOW_ENERGY_TEXT));
     }
 
 }

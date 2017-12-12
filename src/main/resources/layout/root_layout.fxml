@@ -7,12 +7,13 @@
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.dudududi.grainexpansion.controller.RootController">
     <MenuBar>
-        <Menu mnemonicParsing="false" text="File">
+        <Menu mnemonicParsing="false" text="Options">
             <MenuItem fx:id="importButton" mnemonicParsing="false" text="Import"/>
             <MenuItem fx:id="exportButton" mnemonicParsing="false" text="Export"/>
+            <MenuItem fx:id="showEnergyButton" mnemonicParsing="false" text="Show energy"/>
         </Menu>
     </MenuBar>
-    <SplitPane dividerPositions="0.25" prefHeight="620.0" prefWidth="800.0">
+    <SplitPane dividerPositions="0.25" prefHeight="700.0" prefWidth="800.0">
         <TabPane minWidth="300.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE" fx:id="simulationTabPane">
             <Tab text="Cellular Automaton">
                 <fx:include fx:id="cellularAutomaton" source="cellular_automaton_layout.fxml"/>

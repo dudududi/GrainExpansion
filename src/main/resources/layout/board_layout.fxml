@@ -9,6 +9,7 @@
       xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.dudududi.grainexpansion.controller.BoardController">
     <ImageView fx:id="boardView" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true"/>
+    <ImageView fx:id="energyView" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true"/>
     <padding>
         <Insets bottom="50.0" left="50.0" right="50.0" top="50.0"/>
     </padding>

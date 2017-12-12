@@ -19,6 +19,9 @@ public class MonteCarloController extends Controller{
     private StructuresController structuresController;
 
     @FXML
+    private EnergyDistributionController energyDistributionController;
+
+    @FXML
     private AnimationController animationController;
 
     private List<Controller> controllerList;
@@ -34,6 +37,7 @@ public class MonteCarloController extends Controller{
                 spaceGeneratorController,
                 statesController,
                 structuresController,
+                energyDistributionController,
                 animationController
         ));
 

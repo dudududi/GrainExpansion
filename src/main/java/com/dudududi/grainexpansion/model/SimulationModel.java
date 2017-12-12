@@ -99,6 +99,13 @@ public class SimulationModel {
         grainsWarehouse.assign(cell);
     }
 
+    public void distributeEnergy(int energy, int boundary) {
+        board.getCells().forEach(cell -> cell.setEnergy(energy));
+        if (boundary != -1) {
+            grainsWarehouse.findBoundary().forEach(cell -> cell.setEnergy(boundary));
+        }
+    }
+
     public void reinitializeWihCSV(Reader in) {
         try (CSVParser parser = new CSVParser(in, CSVFormat.DEFAULT.withHeader(Cell.CSV_HEADERS).withSkipHeaderRecord())) {
             Board importedBoard = Board.restoreFromCSVRecords(parser);

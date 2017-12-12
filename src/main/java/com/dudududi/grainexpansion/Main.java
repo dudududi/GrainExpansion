@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Main extends Application {
     private static final int WIDTH = 900;
-    private static final int HEIGHT = 650;
+    private static final int HEIGHT = 700;
     private Stage primaryStage;
     private SimulationModel simulationModel;
     private RootController rootController;

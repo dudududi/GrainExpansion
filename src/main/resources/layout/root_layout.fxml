@@ -13,13 +13,17 @@
             <MenuItem fx:id="showEnergyButton" mnemonicParsing="false" text="Show energy"/>
         </Menu>
     </MenuBar>
-    <SplitPane dividerPositions="0.25" prefHeight="700.0" prefWidth="800.0">
-        <TabPane minWidth="300.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE" fx:id="simulationTabPane">
+    <SplitPane dividerPositions="0.35" prefHeight="700.0" prefWidth="800.0">
+        <TabPane maxWidth="300.0" prefWidth="300.0" tabClosingPolicy="UNAVAILABLE" fx:id="simulationTabPane">
             <Tab text="Cellular Automaton">
-                <fx:include fx:id="cellularAutomaton" source="cellular_automaton_layout.fxml"/>
+                <ScrollPane hbarPolicy="NEVER">
+                    <fx:include fx:id="cellularAutomaton" source="cellular_automaton_layout.fxml"/>
+                </ScrollPane>
             </Tab>
             <Tab text="Monte Carlo">
-                <fx:include fx:id="monteCarlo" source="monte_carlo_layout.fxml"/>
+                <ScrollPane hbarPolicy="NEVER">
+                    <fx:include fx:id="monteCarlo" source="monte_carlo_layout.fxml"/>
+                </ScrollPane>
             </Tab>
         </TabPane>
         <VBox alignment="CENTER">

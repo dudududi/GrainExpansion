@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      prefHeight="598.0" prefWidth="334.0" fx:controller="com.dudududi.grainexpansion.controller.MonteCarloController">
+      prefHeight="600.0" prefWidth="300.0" maxWidth="300.0" fx:controller="com.dudududi.grainexpansion.controller.MonteCarloController">
     <fx:include fx:id="spaceGenerator" source="space_generator_layout.fxml"/>
     <Separator prefWidth="200.0"/>
     <fx:include fx:id="states" source="states_layout.fxml"/>
@@ -14,4 +14,6 @@
     <fx:include fx:id="energyDistribution" source="energy_distribution_layout.fxml"/>
     <Separator prefWidth="200.0"/>
     <fx:include fx:id="animation" source="animation_layout.fxml"/>
+    <Separator prefWidth="200.0"/>
+    <fx:include fx:id="staticRecrystallization" source="static_recrystallization_layout.fxml"/>
 </VBox>

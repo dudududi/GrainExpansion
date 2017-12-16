@@ -24,6 +24,9 @@ public class MonteCarloController extends Controller{
     @FXML
     private AnimationController animationController;
 
+    @FXML
+    private StaticRecrystallizationController staticRecrystallizationController;
+
     private List<Controller> controllerList;
 
     public MonteCarloController(SimulationModel simulationModel) {
@@ -38,7 +41,8 @@ public class MonteCarloController extends Controller{
                 statesController,
                 structuresController,
                 energyDistributionController,
-                animationController
+                animationController,
+                staticRecrystallizationController
         ));
 
         controllerList.forEach(controller -> controller.setSimulationMode(SimulationModel.Mode.MONTE_CARLO));

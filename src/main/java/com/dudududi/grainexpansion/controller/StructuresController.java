@@ -65,7 +65,7 @@ public class StructuresController extends Controller{
                 grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, Color.MAGENTA));
                 break;
             case SUBSTRUCTURE:
-                grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, cell.colorProperty().get()));
+                grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, cell.getState().getColor()));
                 break;
             case BOUNDARY:
                 grainsWarehouse.changeGrainBoundariesState(cell, Integer.parseInt(boundariesSizeField.getText()));

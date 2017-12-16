@@ -10,6 +10,7 @@ import com.dudududi.grainexpansion.model.rules.BasicRule;
 import com.dudududi.grainexpansion.model.rules.Rule;
 import javafx.scene.paint.Color;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by dudek on 4/21/16.
@@ -19,15 +20,17 @@ public class CellAutomaton {
     private final NeighbourhoodType neighbourhoodType;
     private final GrainsWarehouse grainsWarehouse;
     private final Rule rule;
+    private final BlockingQueue<Cell.Snapshot> updatesQueue;
 
-    public CellAutomaton(Board board, NeighbourhoodType neighbourhoodType, GrainsWarehouse grainsWarehouse) {
+    public CellAutomaton(Board board, NeighbourhoodType neighbourhoodType, GrainsWarehouse grainsWarehouse, BlockingQueue<Cell.Snapshot> updatesQueue) {
         this.board = board;
         this.neighbourhoodType = neighbourhoodType;
         this.grainsWarehouse = grainsWarehouse;
         this.rule = new BasicRule();
+        this.updatesQueue = updatesQueue;
     }
 
-    public void next() {
+    public void next() throws InterruptedException {
         int width = board.getWidth();
         int height = board.getHeight();
         Cell.State[][] nextStep = new Cell.State[width][height];
@@ -43,6 +46,7 @@ public class CellAutomaton {
                     Cell cell = board.getCell(new CoordinatePair(i, j));
                     cell.setState(nextStep[i][j]);
                     grainsWarehouse.assign(cell);
+                    updatesQueue.put(cell.recordSnapshot());
                 }
             }
         }

@@ -1,9 +1,7 @@
 package com.dudududi.grainexpansion.model.cells;
 
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 import org.apache.commons.csv.CSVRecord;
 
@@ -17,20 +15,14 @@ public class Cell {
     public static final int MIN_ENERGY = 0;
     public static final int MAX_ENERGY = 100;
 
-    private ObjectProperty<Color> colorProperty;
     private IntegerProperty energyProperty;
     private CoordinatePair position;
     private State state;
 
     Cell(CoordinatePair position) {
         this.position = position;
-        this.colorProperty = new SimpleObjectProperty<>(Color.WHITE);
         this.energyProperty = new SimpleIntegerProperty(0);
         setState(State.DEAD_STATE);
-    }
-
-    public ObjectProperty<Color> colorProperty() {
-        return colorProperty;
     }
 
     public IntegerProperty energyProperty() {
@@ -43,7 +35,9 @@ public class Cell {
 
     public void setState(State state) {
         this.state = state;
-        colorProperty.setValue(state.color);
+        if (state.phase == Phase.RECRYSTALLIZED) {
+            setEnergy(-1);
+        }
     }
 
     void reset() {
@@ -72,15 +66,23 @@ public class Cell {
                 state.phase == Phase.BOUNDARY;
     }
 
+    public boolean isRecrystallized() {
+        return state.phase == Phase.RECRYSTALLIZED;
+    }
+
     public State getState() {
         return state;
+    }
+
+    public Snapshot recordSnapshot() {
+        return new Snapshot(position, state.color, energyProperty.get());
     }
 
     Iterable<String> toCSVRecord() {
         return Arrays.asList(
                 String.valueOf(position.x),     // x
                 String.valueOf(position.y),     // y
-                colorProperty.get().toString(), // color
+                state.color.toString(),         // color
                 String.valueOf(state.phase)     // state
         );
     }
@@ -99,7 +101,8 @@ public class Cell {
         ALIVE(1),
         INCLUSION(2),
         SUB_STRUCTURE(3),
-        BOUNDARY(4);
+        BOUNDARY(4),
+        RECRYSTALLIZED(5);
 
         private final int id;
 
@@ -136,6 +139,15 @@ public class Cell {
             return new State(Phase.ALIVE, randomColor);
         }
 
+        public static State createRecrystallizedState() {
+            Color randomColor = Color.gray(random.nextDouble());
+            return new State(Phase.RECRYSTALLIZED, randomColor);
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
@@ -150,6 +162,30 @@ public class Cell {
             // as we want to hold each instance in GrainsWarehouse' HashMap separately,
             // we are adding super.hashCode() to the result
             return super.hashCode() + Objects.hash(color, phase.id);
+        }
+    }
+
+    public static class Snapshot {
+        private final CoordinatePair position;
+        private final Color color;
+        private final int energy;
+
+        private Snapshot(CoordinatePair position, Color color, int energy) {
+            this.position = position;
+            this.color = color;
+            this.energy = energy;
+        }
+
+        public CoordinatePair getPosition() {
+            return position;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        public int getEnergy() {
+            return energy;
         }
     }
 }

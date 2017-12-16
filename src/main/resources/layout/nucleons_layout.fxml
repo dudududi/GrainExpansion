@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" minWidth="300.0" prefHeight="23.0" prefWidth="300.0" spacing="10.0"
+<VBox alignment="CENTER" maxWidth="300.0" prefHeight="23.0" prefWidth="300.0" spacing="10.0"
       xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.dudududi.grainexpansion.controller.NucleonsController">
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">

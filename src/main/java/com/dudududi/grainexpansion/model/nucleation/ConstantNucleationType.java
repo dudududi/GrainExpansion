@@ -27,9 +27,8 @@ public class ConstantNucleationType extends NucleationType {
         }
         for (int i = 0; i < amount; i++) {
             Cell cell = cells.get(random.nextInt(cells.size() - 1));
-            cell.setState(Cell.State.createRecrystallizedState());
+            simulationModel.getBoard().updateCellState(cell, Cell.State.createRecrystallizedState());
             simulationModel.getGrainsWarehouse().assign(cell);
-            simulationModel.getUpdatesQueue().put(cell.recordSnapshot());
         }
     }
 

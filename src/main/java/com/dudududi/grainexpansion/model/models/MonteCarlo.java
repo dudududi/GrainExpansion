@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MonteCarlo {
@@ -20,16 +22,14 @@ public class MonteCarlo {
     private List<Cell> cellList;
     private Random random;
     private GrainsWarehouse grainsWarehouse;
-    private BlockingQueue<Cell.Snapshot> updatesQueue;
 
-    public MonteCarlo(Board board, NeighbourhoodType neighbourhoodType, GrainsWarehouse grainsWarehouse, BlockingQueue<Cell.Snapshot> updatesQueue) {
+    public MonteCarlo(Board board, NeighbourhoodType neighbourhoodType, GrainsWarehouse grainsWarehouse) {
         this.board = board;
         this.neighbourhoodType = neighbourhoodType;
         this.cellStates = new ArrayList<>();
         this.cellList = new ArrayList<>(board.getCells());
         this.random = new Random();
         this.grainsWarehouse = grainsWarehouse;
-        this.updatesQueue = updatesQueue;
     }
 
     public void next() throws InterruptedException {
@@ -40,24 +40,26 @@ public class MonteCarlo {
             Cell.State randomState = selectCellRandomly(cell).getState();
             int energyAfter = GRAIN_BOUNDARY_ENERGY * calculateKroneckerDelta(cell, randomState);
 
-            if (energyAfter - energyBefore <= 0) {
-                cell.setState(randomState);
+            if (energyAfter - energyBefore < 0) {
+                board.updateCellState(cell, randomState);
                 grainsWarehouse.assign(cell);
-                updatesQueue.put(cell.recordSnapshot());
             }
         }
     }
 
-    public void initialize(int statesAmount) throws InterruptedException {
+    public void initialize(int statesAmount) {
         for (int i = 0; i < statesAmount; i++) {
             cellStates.add(Cell.State.createAliveState());
         }
-        for (Cell cell: board.getCells()) {
-            if (!cell.isExcluded()) {
-                cell.setState(cellStates.get(random.nextInt(statesAmount)));
-                grainsWarehouse.assign(cell);
-                updatesQueue.put(cell.recordSnapshot());
+        try {
+            for (Cell cell : board.getCells()) {
+                if (!cell.isExcluded()) {
+                    board.updateCellState(cell, cellStates.get(random.nextInt(statesAmount)));
+                    grainsWarehouse.assign(cell);
+                }
             }
+        } catch (InterruptedException e) {
+            Logger.getGlobal().log(Level.ALL, "Updating states interrupted: {0}", e);
         }
     }
 
@@ -71,10 +73,9 @@ public class MonteCarlo {
             }
             int energyBefore = GRAIN_BOUNDARY_ENERGY * calculateKroneckerDelta(cell, cell.getState()) + cell.getEnergy();
             int energyAfter = GRAIN_BOUNDARY_ENERGY * calculateKroneckerDelta(cell, randomCell.getState());
-            if (energyAfter - energyBefore <= 0) {
-                cell.setState(randomCell.getState());
+            if (energyAfter - energyBefore < 0) {
+                board.updateCellState(cell, randomCell.getState());
                 grainsWarehouse.assign(cell);
-                updatesQueue.put(cell.recordSnapshot());
             }
         }
     }
@@ -91,7 +92,8 @@ public class MonteCarlo {
                 .stream()
                 .filter(cell -> !cell.isExcluded())
                 .collect(Collectors.toList());
-        return neighbours.get(random.nextInt(neighbours.size() - 1));
+        int randomIndex = neighbours.size() > 1 ? random.nextInt((neighbours.size() - 1)) : 0;
+        return neighbours.isEmpty() ? origin : neighbours.get(randomIndex);
     }
 
 }

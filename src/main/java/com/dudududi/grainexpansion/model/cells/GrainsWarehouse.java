@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class GrainsWarehouse {
@@ -37,7 +39,13 @@ public class GrainsWarehouse {
 
     public void changeGrainState(Cell origin, Cell.State newState) {
         List<Cell> grainCells = grains.remove(origin.getState());
-        grainCells.forEach(cell -> cell.setState(newState));
+        grainCells.forEach(cell -> {
+            try {
+                board.updateCellState(cell, newState);
+            } catch (InterruptedException e) {
+                Logger.getGlobal().log(Level.ALL, "Unable to update grain state {0}", e);
+            }
+        });
 
         // duplicates should not be overwritten (look at the implementation of Cell.State#hashCode method)
         grains.put(newState, grainCells);
@@ -72,14 +80,18 @@ public class GrainsWarehouse {
     }
 
     private void drawBoundaries(Cell origin, int size) {
-        for (int i = -size/2; i <= size/2; i++) {
-            for (int j = -size/2; j <= size/2; j++) {
-                CoordinatePair absolutePosition = board.calculateAbsolutePosition(new CoordinatePair(i, j), origin);
-                if (absolutePosition != null) {
-                    board.getCell(absolutePosition).setState(new Cell.State(Cell.Phase.BOUNDARY, Color.BLACK));
+        try {
+            for (int i = -size / 2; i <= size / 2; i++) {
+                for (int j = -size / 2; j <= size / 2; j++) {
+                    CoordinatePair absolutePosition = board.calculateAbsolutePosition(new CoordinatePair(i, j), origin);
+                    if (absolutePosition != null) {
+                        board.updateCellState(board.getCell(absolutePosition), new Cell.State(Cell.Phase.BOUNDARY, Color.BLACK));
+                    }
                 }
-            }
 
+            }
+        } catch (InterruptedException e) {
+            Logger.getGlobal().log(Level.ALL, "Error during processing boundaries: {0}", e);
         }
     }
 

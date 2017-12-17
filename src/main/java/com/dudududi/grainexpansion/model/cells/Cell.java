@@ -1,7 +1,5 @@
 package com.dudududi.grainexpansion.model.cells;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.paint.Color;
 import org.apache.commons.csv.CSVRecord;
 
@@ -15,41 +13,24 @@ public class Cell {
     public static final int MIN_ENERGY = 0;
     public static final int MAX_ENERGY = 100;
 
-    private IntegerProperty energyProperty;
+    private int energy;
     private CoordinatePair position;
     private State state;
 
     Cell(CoordinatePair position) {
         this.position = position;
-        this.energyProperty = new SimpleIntegerProperty(0);
+        this.energy = 0;
         setState(State.DEAD_STATE);
     }
 
-    public IntegerProperty energyProperty() {
-        return energyProperty;
-    }
+    // Public methods
 
     public CoordinatePair getPosition() {
         return position;
     }
 
-    public void setState(State state) {
-        this.state = state;
-        if (state.phase == Phase.RECRYSTALLIZED) {
-            setEnergy(-1);
-        }
-    }
-
-    void reset() {
-        setState(State.DEAD_STATE);
-    }
-
-    public void setEnergy(int energy) {
-        energyProperty.setValue(energy);
-    }
-
     public int getEnergy() {
-        return energyProperty.get();
+        return energy;
     }
 
     public boolean isAlive() {
@@ -74,8 +55,25 @@ public class Cell {
         return state;
     }
 
-    public Snapshot recordSnapshot() {
-        return new Snapshot(position, state.color, energyProperty.get());
+    // Internal package-methods
+
+    void setState(State state) {
+        this.state = state;
+        if (state.phase == Phase.RECRYSTALLIZED) {
+            setEnergy(-1);
+        }
+    }
+
+    void reset() {
+        setState(State.DEAD_STATE);
+    }
+
+    void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
+    Snapshot recordSnapshot() {
+        return new Snapshot(position, state.color, energy);
     }
 
     Iterable<String> toCSVRecord() {

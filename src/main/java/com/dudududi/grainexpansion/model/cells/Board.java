@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +24,7 @@ public class Board {
     private final int width;
     private final int height;
     private final boolean isPeriodic;
-
+    private BlockingQueue<Cell.Snapshot> updatesQueue;
     private List<Cell> cellsList;
 
     public Board(int width, int height, boolean isPeriodic) {
@@ -34,12 +38,14 @@ public class Board {
             }
         }
         cellsList = Arrays.stream(cells).flatMap(Arrays::stream).collect(Collectors.toList());
+        updatesQueue = new ArrayBlockingQueue<>(2 * width * height);
     }
 
     public void resetAll(boolean resetAll) {
         cellsList.forEach( cell -> {
             if (resetAll || cell.isAlive()) {
                 cell.reset();
+                updatesQueue.add(cell.recordSnapshot());
             }
         });
     }
@@ -52,12 +58,26 @@ public class Board {
         return cellsList;
     }
 
+    public BlockingQueue<Cell.Snapshot> getUpdatesQueue() {
+        return updatesQueue;
+    }
+
     public int getWidth() {
         return width;
     }
 
     public int getHeight() {
         return height;
+    }
+
+    public void updateCellState(Cell cell, Cell.State newState) throws InterruptedException {
+        cell.setState(newState);
+        updatesQueue.put(cell.recordSnapshot());
+    }
+
+    public void updateCellEnergy(Cell cell, int newEnergy) {
+        cell.setEnergy(newEnergy);
+        updatesQueue.add(cell.recordSnapshot());
     }
 
     public void printToCSVFile(CSVPrinter printer) throws IOException {
@@ -67,7 +87,6 @@ public class Board {
             }
         }
     }
-
 
     public static Board restoreFromCSVRecords(CSVParser parser) throws IOException {
         List<CSVRecord> records = parser.getRecords();
@@ -89,7 +108,13 @@ public class Board {
                 .map(pos -> calculateAbsolutePosition(pos, destination))
                 .filter(Objects::nonNull)
                 .map(this::getCell)
-                .forEach(cell -> cell.setState(state));
+                .forEach(cell -> {
+                    try {
+                        updateCellState(cell, state);
+                    } catch (InterruptedException e) {
+                        Logger.getGlobal().log(Level.ALL, "Unable to update cell as thread was interrupted: {0}", e);
+                    }
+                });
     }
 
     public CoordinatePair calculateAbsolutePosition(CoordinatePair relativePosition, Cell originCell) {

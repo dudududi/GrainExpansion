@@ -26,27 +26,7 @@ public class StatesController extends Controller {
         statesAmountField.setText(DEFAULT_STATES_AMOUNT);
         generateStatesButton.setOnMouseClicked(e -> {
             int statesAmount = Integer.valueOf(statesAmountField.getText());
-            StatesUpdater statesUpdater = new StatesUpdater(simulationModel, statesAmount);
-            new Thread(statesUpdater).start();
+            new Thread(() -> simulationModel.getMonteCarlo().initialize(statesAmount)).start();
         });
     }
-
-    private static class StatesUpdater implements Runnable {
-        private final SimulationModel simulationModel;
-        private final int statesAmount;
-        private StatesUpdater(SimulationModel simulationModel, int statesAmount) {
-            this.simulationModel = simulationModel;
-            this.statesAmount = statesAmount;
-        }
-
-        @Override
-        public void run() {
-            try {
-                simulationModel.getMonteCarlo().initialize(statesAmount);
-            } catch (InterruptedException e) {
-                Logger.getGlobal().log(Level.ALL, "StatesUpdater has been interrupted. {0}", e);
-            }
-        }
-    }
-
 }

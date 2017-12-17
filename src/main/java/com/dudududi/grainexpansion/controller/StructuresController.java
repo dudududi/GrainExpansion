@@ -59,20 +59,22 @@ public class StructuresController extends Controller{
             return;
         }
         StructureType type = selectStructureType.getSelectionModel().getSelectedItem();
-        GrainsWarehouse grainsWarehouse = simulationModel.getGrainsWarehouse();
-        switch (type) {
-            case DUAL_PHASE:
-                grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, Color.MAGENTA));
-                break;
-            case SUBSTRUCTURE:
-                grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, cell.getState().getColor()));
-                break;
-            case BOUNDARY:
-                grainsWarehouse.changeGrainBoundariesState(cell, Integer.parseInt(boundariesSizeField.getText()));
-                break;
-            default:
-                // do nothing...
-        }
+        new Thread(() -> {
+            GrainsWarehouse grainsWarehouse = simulationModel.getGrainsWarehouse();
+            switch (type) {
+                case DUAL_PHASE:
+                    grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, Color.MAGENTA));
+                    break;
+                case SUBSTRUCTURE:
+                    grainsWarehouse.changeGrainState(cell, new Cell.State(Cell.Phase.SUB_STRUCTURE, cell.getState().getColor()));
+                    break;
+                case BOUNDARY:
+                    grainsWarehouse.changeGrainBoundariesState(cell, Integer.parseInt(boundariesSizeField.getText()));
+                    break;
+                default:
+                    // do nothing...
+            }
+        }).start();
     }
 
     boolean shouldClearAll() {

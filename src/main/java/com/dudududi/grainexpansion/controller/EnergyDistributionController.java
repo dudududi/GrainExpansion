@@ -54,28 +54,7 @@ public class EnergyDistributionController extends Controller {
     private void distributeEnergy(MouseEvent event) {
         String selectedDistType = selectEnergyDistType.getSelectionModel().getSelectedItem();
         int energy = Integer.valueOf(energyField.getText());
-        int boundary = -1;
-        if (selectedDistType.equals(HETEROGENEOUS)) {
-            boundary = Integer.valueOf(boundaryEnergyField.getText());
-        }
-        new Thread(new EnergyDistributor(simulationModel, energy, boundary)).start();
-    }
-
-    private static class EnergyDistributor implements Runnable{
-        private final SimulationModel simulationModel;
-        private final int energy;
-        private final int boundary;
-
-        private EnergyDistributor(SimulationModel simulationModel, int energy, int boundary) {
-            this.simulationModel = simulationModel;
-            this.energy = energy;
-            this.boundary = boundary;
-        }
-
-
-        @Override
-        public void run() {
-            simulationModel.distributeEnergy(energy, boundary);
-        }
+        int boundary = selectedDistType.equals(HOMOGENEOUS) ? -1 : Integer.valueOf(boundaryEnergyField.getText());
+        new Thread(() -> simulationModel.distributeEnergy(energy, boundary)).start();
     }
 }

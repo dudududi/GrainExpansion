@@ -42,7 +42,7 @@ public class InclusionsController extends Controller {
             int size = Integer.valueOf(inclusionsSizeField.getText());
             Shape shape = selectInclusionsType.getSelectionModel().getSelectedItem();
             shape.setSize(size);
-            simulationModel.addInclusions(inclusionsAmount, shape);
+            new Thread(() -> simulationModel.addInclusions(inclusionsAmount, shape)).start();
         });
     }
 }

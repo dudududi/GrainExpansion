@@ -92,11 +92,11 @@ public class BoardController extends Controller {
         updatesTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (simulationModel.getUpdatesQueue().isEmpty()) {
+                if (simulationModel.getBoard().getUpdatesQueue().isEmpty()) {
                     return;
                 }
                 List<Cell.Snapshot> snapshots = new ArrayList<>();
-                int transferred = simulationModel.getUpdatesQueue().drainTo(snapshots);
+                int transferred = simulationModel.getBoard().getUpdatesQueue().drainTo(snapshots);
                 Logger.getGlobal().log(Level.ALL, "Transferred {0} snapshot items to UI.", transferred);
                 for (Cell.Snapshot snapshot: snapshots) {
                     int x = snapshot.getPosition().x;

@@ -30,7 +30,6 @@ public class SimulationModel {
     private GrainsWarehouse grainsWarehouse;
     private Board board;
     private List<Observer> observers;
-    private BlockingQueue<Cell.Snapshot> updatesQueue;
 
     public SimulationModel(Board board) {
         initialize(board);
@@ -47,10 +46,6 @@ public class SimulationModel {
 
     public GrainsWarehouse getGrainsWarehouse() {
          return grainsWarehouse;
-    }
-
-    public BlockingQueue<Cell.Snapshot> getUpdatesQueue() {
-        return updatesQueue;
     }
 
     public void next(Mode mode) throws InterruptedException {
@@ -102,18 +97,18 @@ public class SimulationModel {
     }
 
     public void addNucleon(Cell cell) {
-        cell.setState(Cell.State.createAliveState());
-        grainsWarehouse.assign(cell);
-        updatesQueue.add(cell.recordSnapshot());
+        try {
+            board.updateCellState(cell, Cell.State.createAliveState());
+            grainsWarehouse.assign(cell);
+        } catch (InterruptedException e) {
+            Logger.getGlobal().log(Level.ALL, "Unable to add nucleon, thread was interrupted: {0}", e);
+        }
     }
 
     public void distributeEnergy(int energy, int boundary) {
-        board.getCells().forEach(cell -> cell.setEnergy(energy));
+        board.getCells().forEach(cell -> board.updateCellEnergy(cell, energy));
         if (boundary != -1) {
-            grainsWarehouse.findBoundary().forEach(cell -> {
-                cell.setEnergy(boundary);
-                updatesQueue.add(cell.recordSnapshot());
-            });
+            grainsWarehouse.findBoundary().forEach(cell -> board.updateCellEnergy(cell, boundary));
         }
     }
 
@@ -137,12 +132,10 @@ public class SimulationModel {
 
     private void initialize(Board board) {
         NeighbourhoodType neighbourhoodType = new MooreNeighbourhood(board);
-        int capacity = 2 * board.getHeight() * board.getWidth();
         this.board = board;
-        this.updatesQueue = new ArrayBlockingQueue<>(capacity);
         this.grainsWarehouse = new GrainsWarehouse(board, neighbourhoodType);
-        this.cellAutomaton = new CellAutomaton(this.board, neighbourhoodType, grainsWarehouse, updatesQueue);
-        this.monteCarlo = new MonteCarlo(this.board, neighbourhoodType, grainsWarehouse, updatesQueue);
+        this.cellAutomaton = new CellAutomaton(this.board, neighbourhoodType, grainsWarehouse);
+        this.monteCarlo = new MonteCarlo(this.board, neighbourhoodType, grainsWarehouse);
     }
 
     public enum  Mode {

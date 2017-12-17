@@ -38,7 +38,8 @@ public class SpaceGeneratorController extends Controller {
             int width = Integer.valueOf(boardWidth.getText());
             int height = Integer.valueOf(boardHeight.getText());
             boolean isPeriodic = periodicBC.selectedProperty().get();
-            simulationModel.reinitializeWithBoard(new Board(width, height, isPeriodic));
+            Board board = new Board(width, height, isPeriodic);
+            new Thread(() -> simulationModel.reinitializeWithBoard(board)).start();
         });
     }
 

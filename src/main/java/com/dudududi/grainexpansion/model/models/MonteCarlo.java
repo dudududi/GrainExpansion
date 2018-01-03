@@ -40,7 +40,7 @@ public class MonteCarlo {
             Cell.State randomState = selectCellRandomly(cell).getState();
             int energyAfter = GRAIN_BOUNDARY_ENERGY * calculateKroneckerDelta(cell, randomState);
 
-            if (energyAfter - energyBefore < 0) {
+            if (energyAfter - energyBefore <= 0) {
                 board.updateCellState(cell, randomState);
                 grainsWarehouse.assign(cell);
             }
@@ -67,13 +67,13 @@ public class MonteCarlo {
         Collections.shuffle(cellList);
         for (Cell cell: cellList) {
             Cell randomCell = selectCellRandomly(cell);
-            if (!randomCell.isRecrystallized()) {
+            if (!randomCell.isRecrystallized() || randomCell.isExcluded() || cell.isExcluded()) {
                 // neighbour not recrystallized, continue
                 continue;
             }
             int energyBefore = GRAIN_BOUNDARY_ENERGY * calculateKroneckerDelta(cell, cell.getState()) + cell.getEnergy();
             int energyAfter = GRAIN_BOUNDARY_ENERGY * calculateKroneckerDelta(cell, randomCell.getState());
-            if (energyAfter - energyBefore < 0) {
+            if (energyAfter - energyBefore <= 0) {
                 board.updateCellState(cell, randomCell.getState());
                 grainsWarehouse.assign(cell);
             }
